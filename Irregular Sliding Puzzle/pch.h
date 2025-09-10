@@ -61,3 +61,17 @@ inline Brush SolidFill()
 {
 	return Application::Current().Resources().Lookup(box_value(L"SolidBackgroundFillColorBaseBrush")).as<Brush>();
 }
+
+inline RowDefinition AutoRow()
+{
+	const RowDefinition row;
+	row.Height(GridLengthHelper::Auto());
+	return row;
+}
+
+inline ColumnDefinition AutoColumn()
+{
+	const ColumnDefinition column;
+	column.Width(GridLengthHelper::Auto());
+	return column;
+}

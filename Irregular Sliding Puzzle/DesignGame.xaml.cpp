@@ -23,12 +23,12 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		{
 			const RowDefinitionCollection rows = baby().RowDefinitions();
 			for (int i{}; i < 16; ++i)
-				rows.Append(RowDefinition());
+				rows.Append(AutoRow());
 		}
 		{
 			const ColumnDefinitionCollection columns = baby().ColumnDefinitions();
 			for (int i{}; i < 16; ++i)
-				columns.Append(ColumnDefinition());
+				columns.Append(AutoColumn());
 		}
 		const UIElementCollection children = baby().Children();
 		buttons.assign(16, vector<Border>(16, nullptr));
@@ -63,12 +63,12 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		{
 			const RowDefinitionCollection rows = baby().RowDefinitions();
 			for (uint32_t i{}; i < height; ++i)
-				rows.Append(RowDefinition());
+				rows.Append(AutoRow());
 		}
 		{
 			const ColumnDefinitionCollection columns = baby().ColumnDefinitions();
 			for (uint32_t i{}; i < width; ++i)
-				columns.Append(ColumnDefinition());
+				columns.Append(AutoColumn());
 		}
 		const UIElementCollection children = baby().Children();
 		buttons.assign(height, vector<Border>(width, nullptr));
@@ -303,7 +303,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					mum.Append(CreateRemoveRow(height));
 					mum.Append(CreateAddRow());
 				}
-				baby().RowDefinitions().Append(RowDefinition());
+				baby().RowDefinitions().Append(AutoRow());
 				const UIElementCollection children = baby().Children();
 				const IVector current = single_threaded_vector<bool>();
 				board.Append(current);
@@ -337,7 +337,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					dad.Append(CreateRemoveColumn(width));
 					dad.Append(CreateAddColumn());
 				}
-				baby().ColumnDefinitions().Append(ColumnDefinition());
+				baby().ColumnDefinitions().Append(AutoColumn());
 				const UIElementCollection children = baby().Children();
 				for (uint32_t i{}; i < height; ++i)
 				{

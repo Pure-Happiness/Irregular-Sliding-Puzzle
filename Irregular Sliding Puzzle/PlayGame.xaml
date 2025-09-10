@@ -12,46 +12,59 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Grid Padding="0,16">
+        <Grid Width="256">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <AppBarButton
-                x:Name="Timer"
-                HorizontalAlignment="Center"
-                Label="00:00">
-                <AppBarButton.Icon>
-                    <FontIcon Glyph="&#xE916;"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <Button
-                Grid.Row="1"
-                x:Name="pause"
-                Margin="0,0,0,16"
-                HorizontalAlignment="Center"
-                Click="Pause">
-                <FontIcon Glyph="&#xE769;"/>
-            </Button>
-            <Button
-                Grid.Row="1"
-                x:Name="resume"
-                Visibility="Collapsed"
-                Margin="0,0,0,16"
-                HorizontalAlignment="Center"
-                Click="Resume">
-                <FontIcon Glyph="&#xE768;"/>
-            </Button>
-            <Button
-                Grid.Row="2"
-                HorizontalAlignment="Center"
-                Click="Surrender">
-                <BitmapIcon
-                    UriSource="ms-appx:///Assets/surrender.png"
-                    Height="20"
-                    Width="20"/>
-            </Button>
+            <ScrollView>
+                <Grid
+	                x:Name="target"
+	                Padding="32"
+	                VerticalAlignment="Top"
+	                HorizontalAlignment="Left"/>
+            </ScrollView>
+            <Grid Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <AppBarButton
+		            x:Name="Timer"
+		            VerticalAlignment="Center"
+		            Label="00:00">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE916;"/>
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <Button
+		            Grid.Column="1"
+		            x:Name="pause"
+		            Margin="16,0"
+		            VerticalAlignment="Center"
+		            Click="Pause">
+                    <FontIcon Glyph="&#xE769;"/>
+                </Button>
+                <Button
+		            Grid.Column="1"
+		            x:Name="resume"
+		            Visibility="Collapsed"
+		            Margin="16,0"
+		            VerticalAlignment="Center"
+		            Click="Resume">
+                    <FontIcon Glyph="&#xE768;"/>
+                </Button>
+                <Button
+		            Grid.Column="2"
+		            VerticalAlignment="Center"
+		            Click="Surrender">
+                    <BitmapIcon
+			            UriSource="ms-appx:///Assets/surrender.png"
+			            Height="20"
+			            Width="20"/>
+                </Button>
+            </Grid>
         </Grid>
         <ScrollView
             Grid.Column="1"

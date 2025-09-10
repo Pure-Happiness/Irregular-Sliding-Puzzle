@@ -16,12 +16,12 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		{
 			const RowDefinitionCollection rows = mummy().RowDefinitions();
 			for (uint32_t i{}; i < height; ++i)
-				rows.Append(RowDefinition());
+				rows.Append(AutoRow());
 		}
 		{
 			const ColumnDefinitionCollection columns = mummy().ColumnDefinitions();
 			for (uint32_t i{}; i < width; ++i)
-				columns.Append(ColumnDefinition());
+				columns.Append(AutoColumn());
 		}
 		{
 			const UIElementCollection children = mummy().Children();
@@ -42,14 +42,44 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 			return;
 		}
 		{
+			const RowDefinitionCollection rows = target().RowDefinitions();
+			for (uint32_t i{}; i < height; ++i)
+				rows.Append(AutoRow());
+		}
+		{
+			const ColumnDefinitionCollection columns = target().ColumnDefinitions();
+			for (uint32_t i{}; i < width; ++i)
+				columns.Append(AutoColumn());
+		}
+		{
+			const UIElementCollection children = target().Children();
+			for (uint32_t i{}, now = 1; i < height; ++i)
+				for (uint32_t j{}; j < width; ++j)
+					if (board.GetAt(i).GetAt(j))
+					{
+						const Border border = CreateGround(i, j);
+						if (now < num)
+						{
+							const TextBlock text;
+							text.Text(to_hstring(now++));
+							text.VerticalAlignment(VerticalAlignment::Center);
+							text.HorizontalAlignment(HorizontalAlignment::Center);
+							border.Child(text);
+						}
+						children.Append(border);
+					}
+					else
+						children.Append(CreateWall(i, j));
+		}
+		{
 			const RowDefinitionCollection rows = baby().RowDefinitions();
 			for (uint32_t i{}; i < height; ++i)
-				rows.Append(RowDefinition());
+				rows.Append(AutoRow());
 		}
 		{
 			const ColumnDefinitionCollection columns = baby().ColumnDefinitions();
 			for (uint32_t i{}; i < width; ++i)
-				columns.Append(ColumnDefinition());
+				columns.Append(AutoColumn());
 		}
 		{
 			const UIElementCollection children = baby().Children();
