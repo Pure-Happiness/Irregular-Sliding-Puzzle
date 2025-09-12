@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <random>
+#include <sstream>
 #include <utility>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
+#include <winrt/Windows.Storage.h>
 #include <winrt/Windows.UI.Xaml.Interop.h>
 #include <winrt/Microsoft.UI.Composition.h>
 #include <winrt/Microsoft.UI.Xaml.h>
@@ -32,6 +34,7 @@
 #include <winrt/Microsoft.UI.Dispatching.h>
 #include <winrt/Microsoft.UI.Input.h>
 #include <winrt/Microsoft.Windows.ApplicationModel.Resources.h>
+#include <winrt/Microsoft.Windows.Storage.h>
 #include <wil/cppwinrt_helpers.h>
 
 using namespace std;
@@ -46,6 +49,9 @@ using namespace winrt::Microsoft::UI::Xaml::Input;
 using namespace winrt::Microsoft::UI::Dispatching;
 using namespace winrt::Microsoft::UI::Input;
 using namespace winrt::Microsoft::Windows::ApplicationModel::Resources;
+using namespace winrt::Microsoft::Windows::Storage;
+using Windows::Storage::FileIO;
+using Windows::Storage::StorageFile;
 
 inline Brush AccentFill()
 {

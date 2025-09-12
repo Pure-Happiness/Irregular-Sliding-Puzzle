@@ -5,6 +5,6 @@ namespace Irregular_Sliding_Puzzle
     {
         DesignGame();
         void Init();
-        void Init(UInt32 height, UInt32 width, IVector< IVector<Boolean> > board);
+        void Init(UInt8 height, UInt8 width, IVector< IVector<Boolean> > board);
     }
 }

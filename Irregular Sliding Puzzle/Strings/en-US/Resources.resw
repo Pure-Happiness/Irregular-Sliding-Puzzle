@@ -141,4 +141,13 @@
   <data name="Time" xml:space="preserve">
     <value>You solved it in </value>
   </data>
+  <data name="Pause.Label" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="Resume.Label" xml:space="preserve">
+    <value>Resume</value>
+  </data>
+  <data name="Surrender.Label" xml:space="preserve">
+    <value>Surrender</value>
+  </data>
 </root>

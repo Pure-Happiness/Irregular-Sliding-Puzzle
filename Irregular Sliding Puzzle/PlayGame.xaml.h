@@ -6,25 +6,30 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 {
 	struct PlayGame : PlayGameT<PlayGame>
 	{
-		void Init(uint32_t const& _height, uint32_t const& _width, IVector<IVector<bool>> const& _board);
+		void Init(uint8_t const& _height, uint8_t const& _width, IVector<IVector<bool>> const& _board);
 
 		void Pause(IInspectable const&, RoutedEventArgs const&);
 		void Resume(IInspectable const&, RoutedEventArgs const&);
 		void Surrender(IInspectable const&, RoutedEventArgs const&) const;
 
 	private:
-		uint32_t height, width, ex, ey, num, time;
+		uint8_t height, width, ex, ey;
+		uint16_t num;
+		uint32_t time;
+		chrono::time_point<chrono::steady_clock> start_time;
 		IVector<IVector<bool>> board;
-		vector<vector<uint32_t>> numbers;
+		vector<vector<uint16_t>> numbers;
 		vector<vector<Button>> buttons;
 		DispatcherQueueTimer timer = DispatcherQueue::GetForCurrentThread().CreateTimer();
+		vector<uint8_t> record;
 
-		static Border CreateGround(uint32_t const& x, uint32_t const& y);
-		static Border CreateWall(uint32_t const& x, uint32_t const& y);
-		Button CreateButton(uint32_t const& x, uint32_t const& y, uint32_t const& n);
-		void ResetButton(Button const& button, uint32_t const& x, uint32_t const& y);
+		static Border CreateGround(uint8_t const& x, uint8_t const& y);
+		static Border CreateWall(uint8_t const& x, uint8_t const& y);
+		Button CreateButton(uint8_t const& x, uint8_t const& y, uint16_t const& n);
+		void ResetButton(Button const& button, uint8_t const& x, uint8_t const& y);
 		[[nodiscard]] bool Complete() const;
-		void Move(uint32_t const& x, uint32_t const& y);
+		void Move(uint8_t const& x, uint8_t const& y);
+		fire_and_forget WriteRecord() const;
 	};
 }
 

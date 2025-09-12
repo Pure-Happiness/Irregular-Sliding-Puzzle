@@ -144,4 +144,13 @@
   <data name="Time" xml:space="preserve">
     <value>你解决它用时 </value>
   </data>
+  <data name="Pause.Label" xml:space="preserve">
+    <value>暂停</value>
+  </data>
+  <data name="Resume.Label" xml:space="preserve">
+    <value>继续</value>
+  </data>
+  <data name="Surrender.Label" xml:space="preserve">
+    <value>投降</value>
+  </data>
 </root>

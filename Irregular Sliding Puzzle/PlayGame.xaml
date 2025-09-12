@@ -34,36 +34,33 @@
 		            x:Name="Timer"
 		            VerticalAlignment="Center"
 		            Label="00:00">
-                    <AppBarButton.Icon>
-                        <FontIcon Glyph="&#xE916;"/>
-                    </AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE916;"/>
                 </AppBarButton>
-                <Button
+                <AppBarButton
 		            Grid.Column="1"
 		            x:Name="pause"
-		            Margin="16,0"
+                    x:Uid="Pause"
 		            VerticalAlignment="Center"
-		            Click="Pause">
-                    <FontIcon Glyph="&#xE769;"/>
-                </Button>
-                <Button
+                    Icon="Pause"
+		            Click="Pause"/>
+                <AppBarButton
 		            Grid.Column="1"
 		            x:Name="resume"
+                    x:Uid="Resume"
 		            Visibility="Collapsed"
-		            Margin="16,0"
 		            VerticalAlignment="Center"
-		            Click="Resume">
-                    <FontIcon Glyph="&#xE768;"/>
-                </Button>
-                <Button
+                    Icon="Play"
+		            Click="Resume"/>
+                <AppBarButton
 		            Grid.Column="2"
+                    x:Uid="Surrender"
 		            VerticalAlignment="Center"
 		            Click="Surrender">
                     <BitmapIcon
 			            UriSource="ms-appx:///Assets/surrender.png"
 			            Height="20"
 			            Width="20"/>
-                </Button>
+                </AppBarButton>
             </Grid>
         </Grid>
         <ScrollView
