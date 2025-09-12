@@ -16,14 +16,15 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		void AsReverse(IInspectable const&, TappedRoutedEventArgs const&);
 		void AsErase(IInspectable const&, TappedRoutedEventArgs const&);
 		void StartGame(IInspectable const&, RoutedEventArgs const&) const;
+		fire_and_forget DisplayRecords(IInspectable const&, RoutedEventArgs const&);
 
 	private:
 		uint8_t height = 16, width = 16;
-		IVector<IVector<bool>> board = single_threaded_vector<IVector<bool>>();
+		IVector<IVector<bool>> board;
 		vector<vector<Border>> buttons;
 		enum :uint8_t { Reverse, Write, Erase } status;
 		Point start;
-		bool dragging;
+		bool dragging, loaded;
 
 		Border CreateButton(uint8_t const& x, uint8_t const& y, bool const& v = false);
 		void ResetButton(Border const& button, uint8_t const& x, uint8_t const& y);

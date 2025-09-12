@@ -30,6 +30,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 			for (uint8_t i{}; i < 16; ++i)
 				columns.Append(AutoColumn());
 		}
+		board = single_threaded_vector<IVector<bool>>();
 		const UIElementCollection children = baby().Children();
 		buttons.assign(16, vector<Border>(16, nullptr));
 		for (uint8_t i{}; i < 16; ++i)
@@ -48,48 +49,47 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	{
 		height = _height;
 		width = _width;
+		board = _board;
 		{
 			const UIElementCollection mum = mother().Children();
+			mum.Clear();
 			for (uint8_t i{}; i < height; ++i)
 				mum.Append(CreateRemoveRow(i));
 			mum.Append(CreateAddRow());
 		}
 		{
 			const UIElementCollection dad = father().Children();
+			dad.Clear();
 			for (uint8_t i{}; i < width; ++i)
 				dad.Append(CreateRemoveColumn(i));
 			dad.Append(CreateAddColumn());
 		}
 		{
 			const RowDefinitionCollection rows = baby().RowDefinitions();
+			rows.Clear();
 			for (uint8_t i{}; i < height; ++i)
 				rows.Append(AutoRow());
 		}
 		{
 			const ColumnDefinitionCollection columns = baby().ColumnDefinitions();
+			columns.Clear();
 			for (uint8_t i{}; i < width; ++i)
 				columns.Append(AutoColumn());
 		}
 		const UIElementCollection children = baby().Children();
+		children.Clear();
 		buttons.assign(height, vector<Border>(width, nullptr));
 		for (uint8_t i{}; i < height; ++i)
-		{
-			const IVector current = single_threaded_vector<bool>();
-			board.Append(current);
 			for (uint8_t j{}; j < width; ++j)
-			{
-				const bool v = _board.GetAt(i).GetAt(j);
-				children.Append(CreateButton(i, j, v));
-				current.Append(v);
-			}
-		}
+				children.Append(CreateButton(i, j, _board.GetAt(i).GetAt(j)));
 	}
 
 	void DesignGame::UpdateSize(IInspectable const&, SizeChangedEventArgs const& e)
 	{
 		daughter().Height(e.NewSize().Height);
 		daughter().Width(e.NewSize().Width);
-		son().Width(e.NewSize().Width - 32);
+		son().Width(e.NewSize().Width - 304);
+		records().Height(e.NewSize().Height - 32);
 	}
 
 	void DesignGame::DragStart(IInspectable const&, PointerRoutedEventArgs const& e)
@@ -171,6 +171,102 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	{
 		Frame().Navigate(xaml_typename<PlayGame>());
 		Frame().Content().as<PlayGame>().Init(height, width, board);
+	}
+
+	fire_and_forget DesignGame::DisplayRecords(IInspectable const&, RoutedEventArgs const&)
+	{
+		if (!loaded)
+		{
+			loaded = true;
+			stack<UIElement> st;
+			for (StorageFile const& file : co_await ApplicationData::GetDefault().LocalFolder().GetFilesAsync())
+			{
+				const IBuffer buffer = co_await FileIO::ReadBufferAsync(file);
+				const Grid grid;
+				grid.CornerRadius({ 4, 4, 4, 4 });
+				grid.Background(DataReader::FromBuffer(buffer).ReadByte() ? SuccessBrush() : CriticalBrush());
+				{
+					const ColumnDefinitionCollection columns = grid.ColumnDefinitions();
+					columns.Append(ColumnDefinition());
+					columns.Append(AutoColumn());
+					columns.Append(AutoColumn());
+				}
+				const UIElementCollection children = grid.Children();
+				{
+					const TextBlock block;
+					block.Margin({ 8, 8, 8, 8 });
+					block.VerticalAlignment(VerticalAlignment::Center);
+					const time_t time = stoull(file.Name().data());
+					wostringstream sb;
+					sb << put_time(localtime(&time), L"%Y-%m-%d %H:%M:%S");
+					block.Text(sb.str());
+					children.Append(block);
+				}
+				{
+					const Button button;
+					button.Padding({ 4, 4, 4, 4 });
+					button.VerticalAlignment(VerticalAlignment::Center);
+					Grid::SetColumn(button, 1);
+					{
+						const FontIcon icon;
+						icon.Glyph(L"\uF413");
+						icon.FontSize(12);
+						button.Content(icon);
+					}
+					button.Click([this, buffer](IInspectable const&, RoutedEventArgs const&)
+						{
+							const DataReader reader = DataReader::FromBuffer(buffer);
+							reader.ReadByte();
+							const uint8_t height = reader.ReadByte(), width = reader.ReadByte();
+							const uint32_t size = height * width, len = size + 7 >> 3 << 3;
+							vector<bool> flat(len);
+							for (uint32_t i{}; i < len; i += 8)
+							{
+								const uint8_t byte = reader.ReadByte();
+								flat[i] = byte & 1;
+								flat[i + 1] = byte >> 1 & 1;
+								flat[i + 2] = byte >> 2 & 1;
+								flat[i + 3] = byte >> 3 & 1;
+								flat[i + 4] = byte >> 4 & 1;
+								flat[i + 5] = byte >> 5 & 1;
+								flat[i + 6] = byte >> 6 & 1;
+								flat[i + 7] = byte >> 7;
+							}
+							const IVector board = single_threaded_vector<IVector<bool>>();
+							auto pt = flat.begin();
+							for (uint8_t i{}; i < height; ++i)
+							{
+								const IVector current = single_threaded_vector<bool>();
+								board.Append(current);
+								for (uint8_t j{}; j < width; ++j, ++pt)
+									current.Append(*pt);
+							}
+							Init(height, width, board);
+						});
+					children.Append(button);
+				}
+				{
+					const Button button;
+					button.Padding({ 4, 4, 4, 4 });
+					button.Margin({ 8, 8, 8, 8 });
+					Grid::SetColumn(button, 2);
+					{
+						const FontIcon icon;
+						icon.Glyph(L"\uEF3B");
+						icon.FontSize(12);
+						button.Content(icon);
+					}
+					children.Append(button);
+				}
+				st.push(grid);
+			}
+			const UIElementCollection elements = records().Children();
+			while (!st.empty())
+			{
+				elements.Append(st.top());
+				st.pop();
+			}
+		}
 	}
 
 	Border DesignGame::CreateButton(uint8_t const& x, uint8_t const& y, bool const& v)

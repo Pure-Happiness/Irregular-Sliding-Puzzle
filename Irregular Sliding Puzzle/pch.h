@@ -1,8 +1,11 @@
 #pragma once
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <chrono>
 #include <random>
 #include <sstream>
+#include <stack>
 #include <utility>
 #include <vector>
 
@@ -19,6 +22,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.Storage.h>
+#include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.UI.Xaml.Interop.h>
 #include <winrt/Microsoft.UI.Composition.h>
 #include <winrt/Microsoft.UI.Xaml.h>
@@ -41,6 +45,7 @@ using namespace std;
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
+using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::UI::Xaml::Controls::Primitives;
@@ -66,6 +71,16 @@ inline Brush DefaultFill()
 inline Brush SolidFill()
 {
 	return Application::Current().Resources().Lookup(box_value(L"SolidBackgroundFillColorBaseBrush")).as<Brush>();
+}
+
+inline Brush SuccessBrush()
+{
+	return Application::Current().Resources().Lookup(box_value(L"SystemFillColorSuccessBackgroundBrush")).as<Brush>();
+}
+
+inline Brush CriticalBrush()
+{
+	return Application::Current().Resources().Lookup(box_value(L"SystemFillColorCriticalBackgroundBrush")).as<Brush>();
 }
 
 inline RowDefinition AutoRow()

@@ -10,7 +10,7 @@
     <Canvas SizeChanged="UpdateSize">
         <ScrollView x:Name="daughter">
             <Grid
-                Padding="32,96,32,32"
+                Padding="304,112,32,32"
                 VerticalAlignment="Top"
                 HorizontalAlignment="Left">
                 <Grid.RowDefinitions>
@@ -39,7 +39,7 @@
             </Grid>
         </ScrollView>
         <Grid
-            Canvas.Left="16"
+            Canvas.Left="288"
             Canvas.Top="16"
             Canvas.ZIndex="1"
             x:Name="son"
@@ -93,5 +93,22 @@
                 x:Uid="Play"
                 Click="StartGame"/>
         </Grid>
+        <StackPanel
+            Canvas.Left="16"
+            Canvas.Top="16"
+            Canvas.ZIndex="1"
+            x:Name="records"
+            Width = "256"
+            Padding="16"
+            Spacing="12"
+            Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+            CornerRadius="8"
+            Loaded="DisplayRecords">
+            <TextBlock
+                x:Uid="History"
+                FontSize="18"
+                FontWeight="Bold"/>
+            <Border/>
+        </StackPanel>
     </Canvas>
 </Page>

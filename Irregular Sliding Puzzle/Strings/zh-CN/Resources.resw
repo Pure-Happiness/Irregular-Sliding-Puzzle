@@ -131,10 +131,6 @@
   <data name="TitleBar.Title" xml:space="preserve">
     <value>异形数字华容道</value>
   </data>
-  <data name="History.Label" xml:space="preserve">
-    <value>历史</value>
-    <comment>Bar</comment>
-  </data>
   <data name="Congratulations" xml:space="preserve">
     <value>恭喜！</value>
   </data>
@@ -152,5 +148,8 @@
   </data>
   <data name="Surrender.Label" xml:space="preserve">
     <value>投降</value>
+  </data>
+  <data name="History.Text" xml:space="preserve">
+    <value>历史</value>
   </data>
 </root>
