@@ -8,11 +8,11 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="Pure-Happiness.IrregularSlidingPuzzle"
-    Publisher="CN=Pure-Happiness"
-    Version="0.0.2.0" />
+    Name="PureHappiness.9278D8CD1E3F"
+    Publisher="CN=66672970-5671-4E12-8358-FE6D273920AD"
+    Version="0.0.3.0" />
 
-  <mp:PhoneIdentity PhoneProductId="43c74995-bf27-4fa9-93e6-92044f352d99" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="becd1dfa-c73a-4085-a62a-c502a334f59a" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>Irregular Sliding Puzzle</DisplayName>
@@ -41,7 +41,7 @@
         Square44x44Logo="Assets\Square44x44Logo.png">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"  Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
-        <uap:LockScreen BadgeLogo="Assets\BadgeLogo.png" Notification="badgeAndTileText"/>
+        <uap:LockScreen Notification="badgeAndTileText" BadgeLogo="Assets\BadgeLogo.png"/>
       </uap:VisualElements>
     </Application>
   </Applications>
