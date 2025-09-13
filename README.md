@@ -52,4 +52,4 @@ You can **pause or resume** the game at any time. If your puzzle is too hard to 
 
 Your whole playing process is automatically recorded and saved in the folder `%LOCALAPPDATA%\Packages\PureHappiness.9278D8CD1E3F_3k498pdbhk64a\LocalState`.
 
-> In the current version, replay is not yet supported—only setting the game board to a previous state is available. In the next version 0.1.0, you will be able to replay.
+> In the current version 0.0.3, replay is not yet supported—only setting the game board to a previous state is available. In the next version 0.1.0, you will be able to replay.
