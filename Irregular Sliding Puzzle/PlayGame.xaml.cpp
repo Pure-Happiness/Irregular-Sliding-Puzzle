@@ -174,6 +174,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	void PlayGame::Surrender(IInspectable const&, RoutedEventArgs const&) const
 	{
+		timer.Stop();
 		WriteRecord();
 		Frame().GoBack();
 		Frame().Content().as<DesignGame>().Init(height, width, board);
