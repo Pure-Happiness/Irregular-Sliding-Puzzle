@@ -40,6 +40,7 @@
 #include <winrt/Microsoft.Windows.ApplicationModel.Resources.h>
 #include <winrt/Microsoft.Windows.Storage.h>
 #include <wil/cppwinrt_helpers.h>
+#include <winrt/Irregular_Sliding_Puzzle.h>
 
 using namespace std;
 using namespace winrt;
@@ -59,6 +60,9 @@ using Windows::Storage::FileIO;
 using Windows::Storage::StorageFile;
 
 inline TitleBar title_bar = nullptr;
+inline Irregular_Sliding_Puzzle::ReplayGame alive = nullptr;
+inline uint8_t o_height, o_width;
+inline IVector<IVector<bool>> o_board;
 
 inline Brush AccentFill()
 {

@@ -6,16 +6,8 @@
 
 namespace winrt::Irregular_Sliding_Puzzle::implementation
 {
-	void ReplayGame::Init(IVector<uint8_t> const& _content, uint8_t const& o_height, uint8_t const& o_width, IVector<IVector<bool>> const& o_board)
+	void ReplayGame::Init(IVector<uint8_t> const& _content)
 	{
-		title_bar.IsBackButtonVisible(true);
-		title_bar.BackRequested([this, o_height, o_width, o_board](TitleBar const&, IInspectable const&)
-			{
-				timer.Stop();
-				Frame().GoBack();
-				Frame().Content().as<DesignGame>().Init(o_height, o_width, o_board);
-				title_bar.IsBackButtonVisible(false);
-			});
 		height = (content = _content).GetAt(1);
 		width = content.GetAt(2);
 		numbers.assign(height, vector<uint16_t>(width));
@@ -148,6 +140,11 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				else
 					timer.Interval(chrono::milliseconds((long long)(((content.GetAt(read_pos) | content.GetAt(read_pos + 1) << 8 | content.GetAt(read_pos + 2) << 16 | content.GetAt(read_pos + 3) << 24) - current) / speed)));
 			});
+	}
+
+	DispatcherTimer ReplayGame::Timer() const
+	{
+		return timer;
 	}
 
 	void ReplayGame::Resume(IInspectable const&, RoutedEventArgs const&)

@@ -19,7 +19,8 @@
         </Grid.RowDefinitions>
         <TitleBar
 			x:Name="title"
-			x:Uid="TitleBar"/>
+			x:Uid="TitleBar"
+            BackRequested="ReturnToDesign"/>
         <Frame x:Name="root" Grid.Row="1"/>
     </Grid>
 </Window>

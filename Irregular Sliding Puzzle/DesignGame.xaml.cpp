@@ -264,7 +264,11 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 							for (uint8_t* data = buffer.data(), *end = data + buffer.Length(); data < end; ++data)
 								content.Append(*data);
 							Frame().Navigate(xaml_typename<ReplayGame>());
-							Frame().Content().as<ReplayGame>().Init(content, height, width, board);
+							o_height = height;
+							o_width = width;
+							o_board = board;
+							title_bar.IsBackButtonVisible(true);
+							(alive = Frame().Content().as<ReplayGame>()).Init(content);
 						});
 					children.Append(button);
 				}

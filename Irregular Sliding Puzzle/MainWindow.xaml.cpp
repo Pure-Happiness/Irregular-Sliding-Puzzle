@@ -18,4 +18,12 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 			root().Content().as<DesignGame>().Init();
 		}
 	}
+
+	void MainWindow::ReturnToDesign(TitleBar const&, IInspectable const&)
+	{
+		alive.Timer().Stop();
+		alive.Frame().GoBack();
+		alive.Frame().Content().as<DesignGame>().Init(o_height, o_width, o_board);
+		title_bar.IsBackButtonVisible(false);
+	}
 }

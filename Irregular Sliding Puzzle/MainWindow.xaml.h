@@ -7,6 +7,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	struct MainWindow : MainWindowT<MainWindow>
 	{
 		void ActivatedEvent(IInspectable const&, WindowActivatedEventArgs const&);
+		static void ReturnToDesign(TitleBar const&, IInspectable const&);
 
 	private:
 		bool activated;
