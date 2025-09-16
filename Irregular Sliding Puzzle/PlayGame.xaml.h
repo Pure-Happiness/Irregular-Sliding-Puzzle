@@ -20,11 +20,9 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		IVector<IVector<bool>> board;
 		vector<vector<uint16_t>> numbers;
 		vector<vector<Button>> buttons;
-		DispatcherQueueTimer timer = DispatcherQueue::GetForCurrentThread().CreateTimer();
+		DispatcherTimer timer;
 		vector<uint8_t> record;
 
-		static Border CreateGround(uint8_t const& x, uint8_t const& y);
-		static Border CreateWall(uint8_t const& x, uint8_t const& y);
 		Button CreateButton(uint8_t const& x, uint8_t const& y, uint16_t const& n);
 		void ResetButton(Button const& button, uint8_t const& x, uint8_t const& y);
 		[[nodiscard]] bool Complete() const;

@@ -13,7 +13,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 			activated = true;
 			Title(ResourceLoader().GetString(L"Title"));
 			ExtendsContentIntoTitleBar(true);
-			SetTitleBar(title());
+			SetTitleBar(title_bar = title());
 			root().Navigate(xaml_typename<DesignGame>());
 			root().Content().as<DesignGame>().Init();
 		}

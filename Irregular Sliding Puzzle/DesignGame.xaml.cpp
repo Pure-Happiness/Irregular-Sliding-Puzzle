@@ -81,7 +81,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		buttons.assign(height, vector<Border>(width, nullptr));
 		for (uint8_t i{}; i < height; ++i)
 			for (uint8_t j{}; j < width; ++j)
-				children.Append(CreateButton(i, j, _board.GetAt(i).GetAt(j)));
+				children.Append(CreateButton(i, j, board.GetAt(i).GetAt(j)));
 	}
 
 	void DesignGame::UpdateSize(IInspectable const&, SizeChangedEventArgs const& e)
@@ -218,28 +218,30 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 							const DataReader reader = DataReader::FromBuffer(buffer);
 							reader.ReadByte();
 							const uint8_t height = reader.ReadByte(), width = reader.ReadByte();
-							const uint32_t size = height * width, len = size + 7 >> 3 << 3;
-							vector<bool> flat(len);
-							for (uint32_t i{}; i < len; i += 8)
-							{
-								const uint8_t byte = reader.ReadByte();
-								flat[i] = byte & 1;
-								flat[i + 1] = byte >> 1 & 1;
-								flat[i + 2] = byte >> 2 & 1;
-								flat[i + 3] = byte >> 3 & 1;
-								flat[i + 4] = byte >> 4 & 1;
-								flat[i + 5] = byte >> 5 & 1;
-								flat[i + 6] = byte >> 6 & 1;
-								flat[i + 7] = byte >> 7;
-							}
 							const IVector board = single_threaded_vector<IVector<bool>>();
-							auto pt = flat.begin();
-							for (uint8_t i{}; i < height; ++i)
 							{
-								const IVector current = single_threaded_vector<bool>();
-								board.Append(current);
-								for (uint8_t j{}; j < width; ++j, ++pt)
-									current.Append(*pt);
+								const uint32_t size = height * width, len = size + 7 >> 3 << 3;
+								vector<bool> flat(len);
+								for (uint32_t i{}; i < len; i += 8)
+								{
+									const uint8_t byte = reader.ReadByte();
+									flat[i] = byte & 1;
+									flat[i + 1] = byte >> 1 & 1;
+									flat[i + 2] = byte >> 2 & 1;
+									flat[i + 3] = byte >> 3 & 1;
+									flat[i + 4] = byte >> 4 & 1;
+									flat[i + 5] = byte >> 5 & 1;
+									flat[i + 6] = byte >> 6 & 1;
+									flat[i + 7] = byte >> 7;
+								}
+								auto pt = flat.begin();
+								for (uint8_t i{}; i < height; ++i)
+								{
+									const IVector current = single_threaded_vector<bool>();
+									board.Append(current);
+									for (uint8_t j{}; j < width; ++j, ++pt)
+										current.Append(*pt);
+								}
 							}
 							Init(height, width, board);
 						});
@@ -256,6 +258,14 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 						icon.FontSize(12);
 						button.Content(icon);
 					}
+					button.Click([this, buffer](IInspectable const&, RoutedEventArgs const&)
+						{
+							const IVector content = single_threaded_vector<uint8_t>();
+							for (uint8_t* data = buffer.data(), *end = data + buffer.Length(); data < end; ++data)
+								content.Append(*data);
+							Frame().Navigate(xaml_typename<ReplayGame>());
+							Frame().Content().as<ReplayGame>().Init(content, height, width, board);
+						});
 					children.Append(button);
 				}
 				st.push(grid);
@@ -286,8 +296,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 			{
 				e.Handled(false);
 			});
-		buttons[x][y] = button;
-		return button;
+		return buttons[x][y] = button;
 	}
 
 	void DesignGame::ResetButton(Border const& button, uint8_t const& x, uint8_t const& y)

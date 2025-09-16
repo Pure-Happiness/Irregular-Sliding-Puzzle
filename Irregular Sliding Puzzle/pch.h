@@ -58,6 +58,8 @@ using namespace winrt::Microsoft::Windows::Storage;
 using Windows::Storage::FileIO;
 using Windows::Storage::StorageFile;
 
+inline TitleBar title_bar = nullptr;
+
 inline Brush AccentFill()
 {
 	return Application::Current().Resources().Lookup(box_value(L"AccentFillColorDefaultBrush")).as<Brush>();
@@ -95,4 +97,25 @@ inline ColumnDefinition AutoColumn()
 	const ColumnDefinition column;
 	column.Width(GridLengthHelper::Auto());
 	return column;
+}
+
+inline Border CreateGround(uint8_t const& x, uint8_t const& y)
+{
+	const Border border;
+	Grid::SetRow(border, x);
+	Grid::SetColumn(border, y);
+	border.Background(SolidFill());
+	border.Height(32);
+	border.Width(32);
+	return border;
+}
+
+inline Border CreateWall(uint8_t const& x, uint8_t const& y)
+{
+	const Border border;
+	Grid::SetRow(border, x);
+	Grid::SetColumn(border, y);
+	border.Height(32);
+	border.Width(32);
+	return border;
 }

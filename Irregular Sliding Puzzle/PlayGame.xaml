@@ -12,7 +12,7 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Grid Width="256">
+        <Grid Width="288">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition Height="Auto"/>
@@ -24,14 +24,10 @@
 	                VerticalAlignment="Top"
 	                HorizontalAlignment="Left"/>
             </ScrollView>
-            <Grid
-                Row="1"
+            <StackPanel
+                Grid.Row="1"
+                Orientation="Horizontal"
                 HorizontalAlignment="Center">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
                 <AppBarButton
 		            x:Name="Timer"
 		            VerticalAlignment="Center"
@@ -63,7 +59,7 @@
 			            Height="20"
 			            Width="20"/>
                 </AppBarButton>
-            </Grid>
+            </StackPanel>
         </Grid>
         <ScrollView
             Grid.Column="1"

@@ -144,7 +144,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					record.push_back(num >> 8);
 				}
 		timer.Interval(1s);
-		timer.Tick([this](DispatcherQueueTimer const&, IInspectable const&)
+		timer.Tick([this](IInspectable const&, IInspectable const&)
 			{
 				++time;
 				const uint32_t minutes = time / 60, seconds = time - minutes * 60;
@@ -177,27 +177,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		WriteRecord();
 		Frame().GoBack();
 		Frame().Content().as<DesignGame>().Init(height, width, board);
-	}
-
-	Border PlayGame::CreateGround(uint8_t const& x, uint8_t const& y)
-	{
-		const Border border;
-		Grid::SetRow(border, x);
-		Grid::SetColumn(border, y);
-		border.Background(SolidFill());
-		border.Height(32);
-		border.Width(32);
-		return border;
-	}
-
-	Border PlayGame::CreateWall(uint8_t const& x, uint8_t const& y)
-	{
-		const Border border;
-		Grid::SetRow(border, x);
-		Grid::SetColumn(border, y);
-		border.Height(32);
-		border.Width(32);
-		return border;
 	}
 
 	Button PlayGame::CreateButton(uint8_t const& x, uint8_t const& y, uint16_t const& n)
@@ -244,8 +223,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					dialog.ShowAsync();
 				}
 			});
-		buttons[x][y] = button;
-		return button;
+		return buttons[x][y] = button;
 	}
 
 	void PlayGame::ResetButton(Button const& button, uint8_t const& x, uint8_t const& y)

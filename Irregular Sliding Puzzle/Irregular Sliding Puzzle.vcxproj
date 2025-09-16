@@ -147,6 +147,10 @@
       <DependentUpon>PlayGame.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="ReplayGame.xaml.h">
+      <DependentUpon>ReplayGame.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
@@ -155,6 +159,9 @@
     </Page>
     <Page Include="MainWindow.xaml" />
     <Page Include="PlayGame.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ReplayGame.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
@@ -177,6 +184,10 @@
       <DependentUpon>PlayGame.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="ReplayGame.xaml.cpp">
+      <DependentUpon>ReplayGame.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="DesignGame.idl">
@@ -189,6 +200,10 @@
     </Midl>
     <Midl Include="PlayGame.idl">
       <DependentUpon>PlayGame.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="ReplayGame.idl">
+      <DependentUpon>ReplayGame.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
   </ItemGroup>

@@ -126,11 +126,17 @@
   <data name="History.Text" xml:space="preserve">
     <value>History</value>
   </data>
+  <data name="Next.Label" xml:space="preserve">
+    <value>Next</value>
+  </data>
   <data name="Pause.Label" xml:space="preserve">
     <value>Pause</value>
   </data>
   <data name="Play.Label" xml:space="preserve">
     <value>Play</value>
+  </data>
+  <data name="Previous.Label" xml:space="preserve">
+    <value>Previous</value>
   </data>
   <data name="Resume.Label" xml:space="preserve">
     <value>Resume</value>
