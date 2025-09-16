@@ -8,7 +8,7 @@
 
 ## 安装步骤
 
-微软商店是此游戏的独家官方下载平台。您可以访问[网页商店页面](https://apps.microsoft.com/detail/9NCJ4RNQXC7R)，或直接打开[微软商店应用](ms-windows-store://pdp/?productid=9NCJ4RNQXC7R)安装。
+Microsoft Store 是此游戏的独家官方下载平台，您可以访问 [Microsoft Store 网页版](https://apps.microsoft.com/detail/9NCJ4RNQXC7R)安装（GitHub 不支持直接打开 Microsoft Store 应用的链接）。
 
 当然，您也可以使用`winget`工具，通过执行命令`winget install 9NCJ4RNQXC7R`安装。
 

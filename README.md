@@ -8,7 +8,7 @@ A sliding puzzle is a classic logic game where players rearrange shuffled tiles 
 
 ## Installation
 
-The Microsoft Store is now the exclusive and official platform for downloading this game. You can get it by visiting the [Web Store page](https://apps.microsoft.com/detail/9NCJ4RNQXC7R) or directly opening the [Microsoft Store app](ms-windows-store://pdp/?productid=9NCJ4RNQXC7R) to install.
+The Microsoft Store is now the exclusive and official platform for downloading this game. You can get it by visiting the [Microsoft Store web page](https://apps.microsoft.com/detail/9NCJ4RNQXC7R) (GitHub does not support direct links to the Microsoft Store app).
 
 Of course, you can also install it via `winget` by executing the command `winget install 9NCJ4RNQXC7R`.
 
