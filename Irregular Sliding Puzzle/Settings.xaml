@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="Irregular_Sliding_Puzzle.Settings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel Spacing="12">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                VerticalAlignment="Center"
+                x:Uid="Language"/>
+            <ComboBox
+                Grid.Column="1"
+                x:Name="language"
+                VerticalAlignment="Center"
+                Loaded="InitLanguage"
+                SelectionChanged="SelectLanguage">
+                <x:String>English</x:String>
+                <x:String>简体中文</x:String>
+            </ComboBox>
+        </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock
+		        VerticalAlignment="Center"
+		        x:Uid="Theme"/>
+            <ComboBox
+		        Grid.Column="1"
+		        x:Name="theme"
+		        VerticalAlignment="Center"
+		        Loaded="InitTheme"
+		        SelectionChanged="SelectTheme">
+                <ComboBoxItem x:Uid="Light"/>
+                <ComboBoxItem x:Uid="Dark"/>
+                <ComboBoxItem x:Uid="System"/>
+            </ComboBox>
+        </Grid>
+    </StackPanel>
+</UserControl>

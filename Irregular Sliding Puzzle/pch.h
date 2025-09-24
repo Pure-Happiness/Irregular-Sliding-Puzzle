@@ -38,6 +38,7 @@
 #include <winrt/Microsoft.UI.Dispatching.h>
 #include <winrt/Microsoft.UI.Input.h>
 #include <winrt/Microsoft.Windows.ApplicationModel.Resources.h>
+#include <winrt/Microsoft.Windows.Globalization.h>
 #include <winrt/Microsoft.Windows.Storage.h>
 #include <wil/cppwinrt_helpers.h>
 #include <winrt/Irregular_Sliding_Puzzle.h>
@@ -55,6 +56,7 @@ using namespace winrt::Microsoft::UI::Xaml::Input;
 using namespace winrt::Microsoft::UI::Dispatching;
 using namespace winrt::Microsoft::UI::Input;
 using namespace winrt::Microsoft::Windows::ApplicationModel::Resources;
+using namespace winrt::Microsoft::Windows::Globalization;
 using namespace winrt::Microsoft::Windows::Storage;
 using Windows::Storage::FileIO;
 using Windows::Storage::StorageFile;

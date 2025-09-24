@@ -50,6 +50,8 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Border
                 x:Name="write"
@@ -87,28 +89,50 @@
                 <FontIcon Glyph="&#xE75C;"/>
             </Border>
             <AppBarButton
-			    Grid.Column="3"
+                Grid.Column="3"
+                VerticalAlignment="Center"
+                Icon="Setting"
+                x:Uid="Settings"
+                Click="Set"/>
+            <AppBarButton
+                Grid.Column="4"
+                VerticalAlignment="Center"
+                Icon="Help"
+                x:Uid="Help"
+                Click="Help"/>
+            <AppBarButton
+			    Grid.Column="5"
 			    VerticalAlignment="Center"
 			    Icon="Play"
                 x:Uid="Play"
                 Click="StartGame"/>
         </Grid>
-        <StackPanel
-            Canvas.Left="16"
-            Canvas.Top="16"
-            Canvas.ZIndex="1"
-            x:Name="records"
-            Width = "256"
-            Padding="16"
-            Spacing="12"
-            Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
-            CornerRadius="8"
-            Loaded="DisplayRecords">
+        <Grid
+	        Canvas.Left="16"
+	        Canvas.Top="16"
+	        Canvas.ZIndex="1"
+            x:Name="ancestor"
+	        Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+	        Width = "256"
+	        CornerRadius="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
             <TextBlock
-                x:Uid="History"
-                FontSize="18"
-                FontWeight="Bold"/>
-            <Border/>
-        </StackPanel>
+		        x:Uid="History"
+                Padding="16"
+		        FontSize="18"
+		        FontWeight="Bold"/>
+            <ScrollView
+                Grid.Row="1"
+                HorizontalScrollMode="Disabled">
+                <StackPanel
+		            x:Name="records"
+                    Padding="16"
+		            Spacing="12"
+		            Loaded="DisplayRecords"/>
+            </ScrollView>
+        </Grid>
     </Canvas>
 </Page>

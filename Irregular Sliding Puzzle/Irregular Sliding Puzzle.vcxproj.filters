@@ -14,6 +14,9 @@
     <Page Include="ReplayGame.xaml">
       <Filter>Pages</Filter>
     </Page>
+    <Page Include="Settings.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />
@@ -201,6 +204,9 @@
     </Filter>
     <Filter Include="Pages">
       <UniqueIdentifier>{f38bc9b4-cddd-4b89-a052-9073cd95adfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls">
+      <UniqueIdentifier>{4016bf26-718e-46fe-80bd-aec7d11e4535}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

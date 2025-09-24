@@ -19,6 +19,12 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				}
 			});
 #endif
+		const IPropertySet settings = ApplicationData::GetDefault().LocalSettings().Values();
+		if (const IInspectable theme = settings.TryLookup(L"Theme"))
+			if (const auto value = unbox_value<int32_t>(theme); value < 2)
+				Application::Current().RequestedTheme(static_cast<ApplicationTheme>(value));
+		if (const IInspectable language = settings.TryLookup(L"Language"))
+			ApplicationLanguages::PrimaryLanguageOverride(unbox_value<int32_t>(language) ? L"zh-CN" : L"en-US");
 	}
 
 	/// <summary>

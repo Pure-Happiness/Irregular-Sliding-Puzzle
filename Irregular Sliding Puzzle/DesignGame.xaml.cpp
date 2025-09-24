@@ -89,7 +89,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		daughter().Height(e.NewSize().Height);
 		daughter().Width(e.NewSize().Width);
 		son().Width(e.NewSize().Width - 304);
-		records().Height(e.NewSize().Height - 32);
+		ancestor().Height(e.NewSize().Height - 32);
 	}
 
 	void DesignGame::DragStart(IInspectable const&, PointerRoutedEventArgs const& e)
@@ -165,6 +165,44 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		write().Background(DefaultFill());
 		reverse().Background(DefaultFill());
 		erase().Background(AccentFill());
+	}
+
+	void DesignGame::Set(IInspectable const&, RoutedEventArgs const&) const
+	{
+		const ContentDialog dialog;
+		dialog.XamlRoot(XamlRoot());
+		dialog.Title(box_value(ResourceLoader().GetString(L"设置")));
+		dialog.Content(Settings());
+		dialog.CloseButtonText(ResourceLoader().GetString(L"Back"));
+		dialog.DefaultButton(ContentDialogButton::Close);
+		dialog.ShowAsync();
+	}
+
+	void DesignGame::Help(IInspectable const&, RoutedEventArgs const&) const
+	{
+		const ContentDialog dialog;
+		dialog.XamlRoot(XamlRoot());
+		dialog.Title(box_value(ResourceLoader().GetString(L"用户指南")));
+		{
+			const StackPanel panel;
+			const UIElementCollection collection = panel.Children();
+			{
+				const HyperlinkButton block;
+				block.Content(box_value(ResourceLoader().GetString(L"GitHub")));
+				block.NavigateUri(Uri(ResourceLoader().GetString(L"GitHub Link")));
+				collection.Append(block);
+			}
+			{
+				const HyperlinkButton block;
+				block.Content(box_value(ResourceLoader().GetString(L"Gitee")));
+				block.NavigateUri(Uri(ResourceLoader().GetString(L"Gitee Link")));
+				collection.Append(block);
+			}
+			dialog.Content(panel);
+		}
+		dialog.CloseButtonText(ResourceLoader().GetString(L"Back"));
+		dialog.DefaultButton(ContentDialogButton::Close);
+		dialog.ShowAsync();
 	}
 
 	void DesignGame::StartGame(IInspectable const&, RoutedEventArgs const&) const

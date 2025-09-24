@@ -15,6 +15,8 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		void AsWrite(IInspectable const&, TappedRoutedEventArgs const&);
 		void AsReverse(IInspectable const&, TappedRoutedEventArgs const&);
 		void AsErase(IInspectable const&, TappedRoutedEventArgs const&);
+		void Set(IInspectable const&, RoutedEventArgs const&) const;
+		void Help(IInspectable const&, RoutedEventArgs const&) const;
 		void StartGame(IInspectable const&, RoutedEventArgs const&) const;
 		fire_and_forget DisplayRecords(IInspectable const&, RoutedEventArgs const&);
 

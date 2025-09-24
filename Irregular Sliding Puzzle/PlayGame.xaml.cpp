@@ -213,13 +213,13 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					dialog.Title(box_value(ResourceLoader().GetString(L"Congratulations")));
 					const uint32_t minutes = time / 60, seconds = time - minutes * 60;
 					dialog.Content(box_value(ResourceLoader().GetString(L"Time") + (minutes < 10 ? L"0" : L"") + to_hstring(minutes) + L":" + (seconds < 10 ? L"0" : L"") + to_hstring(seconds)));
-					dialog.PrimaryButtonText(ResourceLoader().GetString(L"Back"));
-					dialog.PrimaryButtonClick([this](ContentDialog const&, ContentDialogButtonClickEventArgs const&)
+					dialog.CloseButtonText(ResourceLoader().GetString(L"Back"));
+					dialog.CloseButtonClick([this](ContentDialog const&, ContentDialogButtonClickEventArgs const&)
 						{
 							Frame().GoBack();
 							Frame().Content().as<DesignGame>().Init(height, width, board);
 						});
-					dialog.DefaultButton(ContentDialogButton::Primary);
+					dialog.DefaultButton(ContentDialogButton::Close);
 					dialog.XamlRoot(XamlRoot());
 					dialog.ShowAsync();
 				}
