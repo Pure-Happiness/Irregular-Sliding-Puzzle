@@ -8,7 +8,9 @@
 
 ## 安装步骤
 
-Microsoft Store 是此游戏的独家官方下载平台，您可以访问 [Microsoft Store 网页版](https://apps.microsoft.com/detail/9NCJ4RNQXC7R)安装（GitHub 不支持直接打开 Microsoft Store 应用的链接）。
+微软应用商店是此游戏的唯一官方下载平台。
+
+[![](https://get.microsoft.com/images/zh-cn%20light.svg)](https://apps.microsoft.com/detail/9NCJ4RNQXC7R)
 
 当然，您也可以使用`winget`工具，通过执行命令`winget install 9NCJ4RNQXC7R`安装。
 
@@ -42,3 +44,7 @@ Microsoft Store 是此游戏的独家官方下载平台，您可以访问 [Micro
 ## 游戏记录
 
 完整游戏过程将被记录并保存到`%LOCALAPPDATA%\Packages\PureHappiness.9278D8CD1E3F_3k498pdbhk64a\LocalState`，您可以点击**历史**栏上相应的**回放**按钮回顾整个游戏过程。
+
+## 设置
+
+点击棋盘设计页面上的**设置**按钮，即可切换深色/浅色主题，并选择显示语言（中文/英文）。

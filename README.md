@@ -8,7 +8,9 @@ A sliding puzzle is a classic logic game where players rearrange shuffled tiles 
 
 ## Installation
 
-The Microsoft Store is now the exclusive and official platform for downloading this game. You can get it by visiting the [Microsoft Store web page](https://apps.microsoft.com/detail/9NCJ4RNQXC7R) (GitHub does not support direct links to the Microsoft Store app).
+The Microsoft Store is the exclusive and official platform for downloading this game.
+
+[![](https://get.microsoft.com/images/en-us%20light.svg)](https://apps.microsoft.com/detail/9NCJ4RNQXC7R)
 
 Of course, you can also install it via `winget` by executing the command `winget install 9NCJ4RNQXC7R`.
 
@@ -42,3 +44,7 @@ You can **pause or resume** the game at any time. If your puzzle is too hard to 
 ## Game Record
 
 Your whole playing process is automatically recorded and saved in the folder `%LOCALAPPDATA%\Packages\PureHappiness.9278D8CD1E3F_3k498pdbhk64a\LocalState`, and you can review it by clicking the corresponding **replay** icon on the **history** board.
+
+## Settings
+
+You can switch between light and dark themes and select your language (English/Chinese) by clicking the **Settings** icon on the board design page.
