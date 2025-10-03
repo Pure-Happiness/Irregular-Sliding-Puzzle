@@ -91,7 +91,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 						if (now < num)
 							children.Append(CreateButton(i, j, numbers[i][j] = now++));
 						else
-							ex = i, ey = j;
+							children.Append(empty = CreateWall(ex = i, ey = j));
 					else
 						children.Append(CreateWall(i, j));
 		}
@@ -247,6 +247,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	void PlayGame::Move(uint8_t const& x, uint8_t const& y)
 	{
 		if (x == ex)
+		{
 			if (y < ey)
 			{
 				for (uint8_t i = y; i < ey; ++i)
@@ -257,7 +258,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					ResetButton(buttons[x][i], x, i + 1);
 					numbers[x][i + 1] = numbers[x][i];
 				}
-				numbers[x][ey = y] = 0;
 			}
 			else
 			{
@@ -269,9 +269,11 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					ResetButton(buttons[x][i], x, i - 1);
 					numbers[x][i - 1] = numbers[x][i];
 				}
-				numbers[x][ey = y] = 0;
 			}
+			ey = y;
+		}
 		else if (y == ey)
+		{
 			if (x < ex)
 			{
 				for (uint8_t i = x; i < ex; ++i)
@@ -282,7 +284,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					ResetButton(buttons[i][y], i + 1, y);
 					numbers[i + 1][y] = numbers[i][y];
 				}
-				numbers[ex = x][y] = 0;
 			}
 			else
 			{
@@ -294,8 +295,12 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					ResetButton(buttons[i][y], i - 1, y);
 					numbers[i - 1][y] = numbers[i][y];
 				}
-				numbers[ex = x][y] = 0;
 			}
+			ex = x;
+		}
+		numbers[ex][ey] = 0;
+		Grid::SetRow(empty, ex);
+		Grid::SetColumn(empty, ey);
 	}
 
 	fire_and_forget PlayGame::WriteRecord() const

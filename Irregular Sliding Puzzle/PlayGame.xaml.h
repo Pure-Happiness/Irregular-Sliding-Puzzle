@@ -22,6 +22,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		vector<vector<Button>> buttons;
 		DispatcherTimer timer;
 		vector<uint8_t> record;
+		Border empty = nullptr;
 
 		Button CreateButton(uint8_t const& x, uint8_t const& y, uint16_t const& n);
 		void ResetButton(Button const& button, uint8_t const& x, uint8_t const& y);
