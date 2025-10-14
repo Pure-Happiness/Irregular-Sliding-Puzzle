@@ -20,6 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />
+    <Midl Include="Graph.idl">
+      <Filter>DataStructures</Filter>
+    </Midl>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -207,6 +210,9 @@
     </Filter>
     <Filter Include="Controls">
       <UniqueIdentifier>{4016bf26-718e-46fe-80bd-aec7d11e4535}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DataStructures">
+      <UniqueIdentifier>{62f0aac6-56ec-4e2a-8391-3e26536bb415}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

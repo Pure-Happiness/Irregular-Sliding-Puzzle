@@ -137,6 +137,10 @@
       <DependentUpon>DesignGame.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="Graph.h">
+      <DependentUpon>Graph.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h">
       <DependentUpon>App.xaml</DependentUpon>
@@ -178,6 +182,10 @@
       <DependentUpon>DesignGame.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="Graph.cpp">
+      <DependentUpon>Graph.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -205,6 +213,9 @@
     <Midl Include="DesignGame.idl">
       <DependentUpon>DesignGame.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="Graph.idl">
+      <SubType>Designer</SubType>
     </Midl>
     <Midl Include="MainWindow.idl">
       <SubType>Code</SubType>

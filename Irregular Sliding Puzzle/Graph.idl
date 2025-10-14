@@ -1,0 +1,29 @@
+namespace Irregular_Sliding_Puzzle
+{
+    delegate void VV(Object v);
+    delegate Boolean VB(Object v);
+	delegate void EV(Object e);
+	delegate Boolean EB(Object e);
+    delegate void NV(Object e, Object v);
+    delegate Boolean NB(Object e, Object v);
+    delegate void SillyPair(Object x, Object y);
+
+    [default_interface]
+    runtimeclass Graph
+    {
+        Graph();
+        void AddVertex(Object v);
+		void EraseVertex(Object v);
+        void AddEdge(Object e, Object u, Object v);
+		void EraseEdge(Object e);
+        void GetEdge(Object e, SillyPair p);
+		void forEachVertex(VV func);
+		Boolean forEachVertex2(VB func);
+		void forEachEdge(EV func);
+		Boolean forEachEdge2(EB func);
+        void ForEachNeighbor(Object v, NV func);
+        Boolean ForEachNeighbor2(Object v, NB func);
+		UInt32 VertexCount();
+		UInt32 EdgeCount();
+    }
+}

@@ -3,7 +3,9 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <chrono>
+#include <map>
 #include <random>
+#include <ranges>
 #include <sstream>
 #include <stack>
 #include <utility>
@@ -52,6 +54,7 @@ using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::UI::Xaml::Controls::Primitives;
 using namespace winrt::Microsoft::UI::Xaml::Media;
+using namespace winrt::Microsoft::UI::Xaml::Shapes;
 using namespace winrt::Microsoft::UI::Xaml::Input;
 using namespace winrt::Microsoft::UI::Dispatching;
 using namespace winrt::Microsoft::UI::Input;
@@ -60,6 +63,8 @@ using namespace winrt::Microsoft::Windows::Globalization;
 using namespace winrt::Microsoft::Windows::Storage;
 using Windows::Storage::FileIO;
 using Windows::Storage::StorageFile;
+using SEllipse = Shapes::Ellipse;
+using GraphP = Irregular_Sliding_Puzzle::Graph;
 
 inline TitleBar title_bar = nullptr;
 inline Irregular_Sliding_Puzzle::ReplayGame alive = nullptr;
@@ -124,4 +129,9 @@ inline Border CreateWall(uint8_t const& x, uint8_t const& y)
 	border.Height(32);
 	border.Width(32);
 	return border;
+}
+
+auto SillyPairAssign(auto& a, auto& b)
+{
+	return [&a, &b](IInspectable const& x, IInspectable const& y) { a = x, b = y; };
 }
