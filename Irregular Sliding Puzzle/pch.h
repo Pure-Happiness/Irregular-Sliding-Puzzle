@@ -96,6 +96,11 @@ inline Brush CriticalBrush()
 	return Application::Current().Resources().Lookup(box_value(L"SystemFillColorCriticalBackgroundBrush")).as<Brush>();
 }
 
+inline Brush ControlBorder()
+{
+	return Application::Current().Resources().Lookup(box_value(L"ControlElevationBorderBrush")).as<Brush>();
+}
+
 inline RowDefinition AutoRow()
 {
 	const RowDefinition row;

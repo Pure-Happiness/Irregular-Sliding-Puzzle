@@ -59,6 +59,8 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					if (board.GetAt(i).GetAt(j))
 					{
 						const Border border = CreateGround(i, j);
+						border.BorderThickness({ 1, 1, 1, 1 });
+						border.BorderBrush(ControlBorder());
 						if (now < num)
 						{
 							const TextBlock text;

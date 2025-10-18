@@ -19,6 +19,8 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		bool ForEachNeighbor2(IInspectable const& v, NB const& func) const;
 		[[nodiscard]] uint32_t VertexCount() const;
 		[[nodiscard]] uint32_t EdgeCount() const;
+		void ClearEdges();
+		void Clear();
 
 	private:
 		map<IInspectable, pair<IInspectable, IInspectable>> edges;

@@ -91,4 +91,17 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	{
 		return edges.size();
 	}
+
+	void Graph::ClearEdges()
+	{
+		edges.clear();
+		for (auto& m : adj | views::values)
+			m.clear();
+	}
+
+	void Graph::Clear()
+	{
+		edges.clear();
+		adj.clear();
+	}
 }

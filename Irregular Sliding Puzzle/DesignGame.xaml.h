@@ -12,9 +12,14 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		void UpdateSize(IInspectable const&, SizeChangedEventArgs const& e);
 		void DragStart(IInspectable const&, PointerRoutedEventArgs const& e);
 		void DragEnd(IInspectable const&, PointerRoutedEventArgs const& e);
+		void ToGraphMode(IInspectable const&, RoutedEventArgs const&);
+		void ToGridMode(IInspectable const&, RoutedEventArgs const&);
 		void AsWrite(IInspectable const&, TappedRoutedEventArgs const&);
+		void AddVertices(IInspectable const&, TappedRoutedEventArgs const&);
 		void AsReverse(IInspectable const&, TappedRoutedEventArgs const&);
+		void AddSegments(IInspectable const&, TappedRoutedEventArgs const&);
 		void AsErase(IInspectable const&, TappedRoutedEventArgs const&);
+		void AddCurves(IInspectable const&, TappedRoutedEventArgs const&);
 		void Set(IInspectable const&, RoutedEventArgs const&) const;
 		void Help(IInspectable const&, RoutedEventArgs const&) const;
 		void StartGame(IInspectable const&, RoutedEventArgs const&) const;
@@ -24,9 +29,9 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		uint8_t height = 16, width = 16;
 		IVector<IVector<bool>> board;
 		vector<vector<Border>> buttons;
-		enum :uint8_t { Reverse, Write, Erase } status;
+		enum :uint8_t { Reverse, Write, Erase, Vertex, Segment, Curve } status;
 		Point start;
-		bool dragging, loaded;
+		bool dragging, loaded, is_graph;
 
 		Border CreateButton(uint8_t const& x, uint8_t const& y, bool const& v = false);
 		void ResetButton(Border const& button, uint8_t const& x, uint8_t const& y);

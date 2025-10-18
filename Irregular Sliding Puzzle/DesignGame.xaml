@@ -9,34 +9,42 @@
 
     <Canvas SizeChanged="UpdateSize">
         <ScrollView x:Name="daughter">
-            <Grid
-                Padding="304,112,32,32"
-                VerticalAlignment="Top"
-                HorizontalAlignment="Left">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel
-                    Grid.Row="1"
-                    x:Name="mother"/>
-                <StackPanel
-                    Grid.Column="1"
-                    x:Name="father"
-                    Orientation="Horizontal"/>
+            <Canvas>
                 <Grid
-                    Grid.Row="1"
-                    Grid.Column="1"
-	                x:Name="baby"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    PointerPressed="DragStart"
-                    PointerReleased="DragEnd"/>
-            </Grid>
+                    x:Name="gridBoard"
+		            Padding="304,112,32,32"
+		            VerticalAlignment="Top"
+		            HorizontalAlignment="Left">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel
+			            Grid.Row="1"
+			            x:Name="mother"/>
+                    <StackPanel
+			            Grid.Column="1"
+			            x:Name="father"
+			            Orientation="Horizontal"/>
+                    <Grid
+			            Grid.Row="1"
+			            Grid.Column="1"
+			            x:Name="baby"
+			            VerticalAlignment="Top"
+			            HorizontalAlignment="Left"
+			            PointerPressed="DragStart"
+			            PointerReleased="DragEnd"/>
+                </Grid>
+                <Canvas
+		            x:Name="graphBoard"
+		            Height="4096"
+		            Width="4096"
+		            Visibility="Collapsed"/>
+            </Canvas>
         </ScrollView>
         <Grid
             Canvas.Left="288"
@@ -46,6 +54,7 @@
 		    Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
 		    CornerRadius="8">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
@@ -53,11 +62,28 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
+            <AppBarButton
+                x:Name="graphMode"
+                VerticalAlignment="Center"
+                x:Uid="GraphMode"
+                Click="ToGraphMode">
+                <FontIcon Glyph="&#xF22C;"/>
+            </AppBarButton>
+            <AppBarButton
+                x:Name="gridMode"
+                VerticalAlignment="Center"
+                x:Uid="GridMode"
+                Click="ToGridMode"
+                Visibility="Collapsed">
+                <FontIcon Glyph="&#xF232;"/>
+            </AppBarButton>
             <Border
+                Grid.Column="1"
                 x:Name="write"
                 Padding="8"
                 CornerRadius="4,0,0,4"
                 BorderThickness="1"
+                BorderBrush="{ThemeResource ControlElevationBorderBrush}"
 			    VerticalAlignment="Center"
                 HorizontalAlignment="Right"
                 Background="{ThemeResource ControlFillColorDefaultBrush}"
@@ -65,11 +91,25 @@
                 <FontIcon Glyph="&#xE70F;"/>
             </Border>
             <Border
-			    Grid.Column="1"
+		        Grid.Column="1"
+		        x:Name="vertex"
+		        Padding="8"
+		        CornerRadius="4,0,0,4"
+		        BorderThickness="1"
+		        BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+		        VerticalAlignment="Center"
+		        HorizontalAlignment="Right"
+		        Background="{ThemeResource ControlFillColorDefaultBrush}"
+		        Tapped="AddVertices"
+                Visibility="Collapsed">
+                <TextBlock x:Uid="AddVertices"/>
+            </Border>
+            <Border
+			    Grid.Column="2"
                 x:Name="reverse"
                 Padding="8"
-                CornerRadius="0"
                 BorderThickness="1"
+			    BorderBrush="{ThemeResource ControlElevationBorderBrush}"
 			    VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Background="{ThemeResource AccentFillColorDefaultBrush}"
@@ -77,31 +117,59 @@
                 <FontIcon Glyph="&#xE895;"/>
             </Border>
             <Border
-			    Grid.Column="2"
+		        Grid.Column="2"
+		        x:Name="segment"
+		        Padding="8"
+		        BorderThickness="1"
+                BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+		        VerticalAlignment="Center"
+		        HorizontalAlignment="Center"
+		        Background="{ThemeResource AccentFillColorDefaultBrush}"
+		        Tapped="AddSegments"
+                Visibility="Collapsed">
+                <TextBlock x:Uid="AddSegments"/>
+            </Border>
+            <Border
+			    Grid.Column="3"
                 x:Name="erase"
                 Padding="8"
                 CornerRadius="0,4,4,0"
                 BorderThickness="1"
+			    BorderBrush="{ThemeResource ControlElevationBorderBrush}"
 			    VerticalAlignment="Center"
                 HorizontalAlignment="Left"
                 Background="{ThemeResource ControlFillColorDefaultBrush}"
                 Tapped="AsErase">
                 <FontIcon Glyph="&#xE75C;"/>
             </Border>
+            <Border
+		        Grid.Column="3"
+		        x:Name="curve"
+		        Padding="8"
+		        CornerRadius="0,4,4,0"
+		        BorderThickness="1"
+		        BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+		        VerticalAlignment="Center"
+		        HorizontalAlignment="Left"
+		        Background="{ThemeResource ControlFillColorDefaultBrush}"
+		        Tapped="AddCurves"
+                Visibility="Collapsed">
+                <TextBlock x:Uid="AddCurves"/>
+            </Border>
             <AppBarButton
-                Grid.Column="3"
+                Grid.Column="4"
                 VerticalAlignment="Center"
                 Icon="Setting"
                 x:Uid="Settings"
                 Click="Set"/>
             <AppBarButton
-                Grid.Column="4"
+                Grid.Column="5"
                 VerticalAlignment="Center"
                 Icon="Help"
                 x:Uid="Help"
                 Click="Help"/>
             <AppBarButton
-			    Grid.Column="5"
+			    Grid.Column="6"
 			    VerticalAlignment="Center"
 			    Icon="Play"
                 x:Uid="Play"

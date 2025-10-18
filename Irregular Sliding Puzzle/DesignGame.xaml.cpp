@@ -142,6 +142,36 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		}
 	}
 
+	void DesignGame::ToGraphMode(IInspectable const&, RoutedEventArgs const&)
+	{
+		is_graph = true;
+		gridBoard().Visibility(Visibility::Collapsed);
+		graphBoard().Visibility(Visibility::Visible);
+		graphMode().Visibility(Visibility::Collapsed);
+		gridMode().Visibility(Visibility::Visible);
+		write().Visibility(Visibility::Collapsed);
+		vertex().Visibility(Visibility::Visible);
+		reverse().Visibility(Visibility::Collapsed);
+		segment().Visibility(Visibility::Visible);
+		erase().Visibility(Visibility::Collapsed);
+		curve().Visibility(Visibility::Visible);
+	}
+
+	void DesignGame::ToGridMode(IInspectable const&, RoutedEventArgs const&)
+	{
+		is_graph = false;
+		gridBoard().Visibility(Visibility::Visible);
+		graphBoard().Visibility(Visibility::Collapsed);
+		graphMode().Visibility(Visibility::Visible);
+		gridMode().Visibility(Visibility::Collapsed);
+		write().Visibility(Visibility::Visible);
+		vertex().Visibility(Visibility::Collapsed);
+		reverse().Visibility(Visibility::Visible);
+		segment().Visibility(Visibility::Collapsed);
+		erase().Visibility(Visibility::Visible);
+		curve().Visibility(Visibility::Collapsed);
+	}
+
 	void DesignGame::AsWrite(IInspectable const&, TappedRoutedEventArgs const&)
 	{
 		status = Write;
@@ -150,13 +180,28 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		erase().Background(DefaultFill());
 	}
 
+	void DesignGame::AddVertices(IInspectable const&, TappedRoutedEventArgs const&)
+	{
+		status = Vertex;
+		vertex().Background(AccentFill());
+		segment().Background(DefaultFill());
+		curve().Background(DefaultFill());
+	}
+
 	void DesignGame::AsReverse(IInspectable const&, TappedRoutedEventArgs const&)
 	{
 		status = Reverse;
 		write().Background(DefaultFill());
 		reverse().Background(AccentFill());
 		erase().Background(DefaultFill());
-		erase().Background(DefaultFill());
+	}
+
+	void DesignGame::AddSegments(IInspectable const&, TappedRoutedEventArgs const&)
+	{
+		status = Segment;
+		vertex().Background(DefaultFill());
+		segment().Background(AccentFill());
+		curve().Background(DefaultFill());
 	}
 
 	void DesignGame::AsErase(IInspectable const&, TappedRoutedEventArgs const&)
@@ -165,6 +210,14 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		write().Background(DefaultFill());
 		reverse().Background(DefaultFill());
 		erase().Background(AccentFill());
+	}
+
+	void DesignGame::AddCurves(IInspectable const&, TappedRoutedEventArgs const&)
+	{
+		status = Curve;
+		vertex().Background(DefaultFill());
+		segment().Background(DefaultFill());
+		curve().Background(AccentFill());
 	}
 
 	void DesignGame::Set(IInspectable const&, RoutedEventArgs const&) const
@@ -327,6 +380,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		Grid::SetRow(button, x);
 		Grid::SetColumn(button, y);
 		button.BorderThickness({ 1, 1, 1, 1 });
+		button.BorderBrush(ControlBorder());
 		button.Background(v ? AccentFill() : DefaultFill());
 		button.Height(32);
 		button.Width(32);

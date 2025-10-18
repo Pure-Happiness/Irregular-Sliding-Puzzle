@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddCurves.Text" xml:space="preserve">
+    <value>Add Curves</value>
+  </data>
+  <data name="AddSegments.Text" xml:space="preserve">
+    <value>Add Line Segments</value>
+  </data>
+  <data name="AddVertices.Text" xml:space="preserve">
+    <value>Add Vertices</value>
+  </data>
   <data name="Back" xml:space="preserve">
     <value>Close</value>
   </data>
@@ -137,6 +146,12 @@
   </data>
   <data name="GitHub Link" xml:space="preserve">
     <value>https://github.com/Pure-Happiness/Irregular-Sliding-Puzzle/blob/master/README.md</value>
+  </data>
+  <data name="GraphMode.Label" xml:space="preserve">
+    <value>Graph</value>
+  </data>
+  <data name="GridMode.Label" xml:space="preserve">
+    <value>Grid</value>
   </data>
   <data name="Help.Label" xml:space="preserve">
     <value>Help</value>

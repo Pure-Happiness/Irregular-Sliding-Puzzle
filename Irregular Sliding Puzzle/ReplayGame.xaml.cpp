@@ -10,7 +10,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	{
 		height = (content = _content).GetAt(1);
 		width = content.GetAt(2);
-		numbers.assign(height, vector<uint16_t>(width));
 		buttons.assign(height, vector<Button>(width, nullptr));
 		{
 			const uint32_t size = height * width, len = size + 7 >> 3 << 3;
@@ -76,6 +75,8 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					if (board.GetAt(i).GetAt(j))
 					{
 						const Border border = CreateGround(i, j);
+						border.BorderThickness({ 1, 1, 1, 1 });
+						border.BorderBrush(ControlBorder());
 						if (now < num)
 						{
 							const TextBlock text;
@@ -104,7 +105,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 			for (uint8_t i{}; i < height; ++i)
 				for (uint8_t j{}; j < width; ++j)
 					if (board.GetAt(i).GetAt(j))
-						if (const uint16_t& val = numbers[i][j] = content.GetAt(read_pos++) | content.GetAt(read_pos++) << 8)
+						if (const uint16_t& val = content.GetAt(read_pos++) | content.GetAt(read_pos++) << 8)
 						{
 							const Button button;
 							Grid::SetRow(button, i);
@@ -116,7 +117,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 							children.Append(buttons[i][j] = button);
 						}
 						else
-							ex = i, ey = j;
+							children.Append(empty = CreateWall(ex = i, ey = j));
 					else
 						children.Append(CreateWall(i, j));
 		}
@@ -229,17 +230,14 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	void ReplayGame::Move(uint8_t const& x, uint8_t const& y)
 	{
 		if (x == ex)
+		{
 			if (y < ey)
 			{
 				for (uint8_t i = y; i < ey; ++i)
 					if (!board.GetAt(x).GetAt(i))
 						return;
 				for (uint8_t i = ey; i-- > y;)
-				{
 					ResetButton(buttons[x][i], x, i + 1);
-					numbers[x][i + 1] = numbers[x][i];
-				}
-				numbers[x][ey = y] = 0;
 			}
 			else
 			{
@@ -247,24 +245,19 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					if (!board.GetAt(x).GetAt(i))
 						return;
 				for (uint8_t i = ey; i++ < y;)
-				{
 					ResetButton(buttons[x][i], x, i - 1);
-					numbers[x][i - 1] = numbers[x][i];
-				}
-				numbers[x][ey = y] = 0;
 			}
+			ey = y;
+		}
 		else if (y == ey)
+		{
 			if (x < ex)
 			{
 				for (uint8_t i = x; i < ex; ++i)
 					if (!board.GetAt(i).GetAt(y))
 						return;
 				for (uint8_t i = ex; i-- > x;)
-				{
 					ResetButton(buttons[i][y], i + 1, y);
-					numbers[i + 1][y] = numbers[i][y];
-				}
-				numbers[ex = x][y] = 0;
 			}
 			else
 			{
@@ -272,11 +265,11 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					if (!board.GetAt(i).GetAt(y))
 						return;
 				for (uint8_t i = ex; i++ < x;)
-				{
 					ResetButton(buttons[i][y], i - 1, y);
-					numbers[i - 1][y] = numbers[i][y];
-				}
-				numbers[ex = x][y] = 0;
 			}
+			ex = x;
+		}
+		Grid::SetRow(empty, ex);
+		Grid::SetColumn(empty, ey);
 	}
 }

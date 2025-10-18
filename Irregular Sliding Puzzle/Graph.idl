@@ -25,5 +25,7 @@ namespace Irregular_Sliding_Puzzle
         Boolean ForEachNeighbor2(Object v, NB func);
 		UInt32 VertexCount();
 		UInt32 EdgeCount();
+        void ClearEdges();
+        void Clear();
     }
 }
