@@ -12,9 +12,7 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <ScrollView
-            Width="288"
-            HorizontalScrollMode="Disabled">
+        <ScrollView Width="288" HorizontalScrollMode="Disabled">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -161,16 +159,15 @@
 		            x:Uid="Play"
 		            Click="StartGame"/>
             </Grid>
-            <ScrollView
-                Grid.Row="1"
-                CornerRadius="8,0,0,0"
-                Background="{ThemeResource LayerFillColorDefaultBrush}">
-                <Canvas>
+            <Grid
+	            Grid.Row="1"
+	            CornerRadius="8,0,0,0"
+	            Background="{ThemeResource LayerFillColorDefaultBrush}">
+                <ScrollView x:Name="gridBoard">
                     <Grid
-				        x:Name="gridBoard"
-				        Padding="32"
-				        VerticalAlignment="Top"
-				        HorizontalAlignment="Left">
+		                Padding="32"
+		                VerticalAlignment="Top"
+		                HorizontalAlignment="Left">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -179,29 +176,25 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Row="1" x:Name="mother"/>
                         <StackPanel
-					        Grid.Row="1"
-					        x:Name="mother"/>
-                        <StackPanel
-					        Grid.Column="1"
-					        x:Name="father"
-					        Orientation="Horizontal"/>
+			                Grid.Column="1"
+			                x:Name="father"
+			                Orientation="Horizontal"/>
                         <Grid
-					        Grid.Row="1"
-					        Grid.Column="1"
-					        x:Name="baby"
-					        VerticalAlignment="Top"
-					        HorizontalAlignment="Left"
-					        PointerPressed="DragStart"
-					        PointerReleased="DragEnd"/>
+			                Grid.Row="1"
+			                Grid.Column="1"
+			                x:Name="baby"
+			                VerticalAlignment="Top"
+			                HorizontalAlignment="Left"
+			                PointerPressed="DragStart"
+			                PointerReleased="DragEnd"/>
                     </Grid>
-                    <Canvas
-				        x:Name="graphBoard"
-				        Height="4096"
-				        Width="4096"
-				        Visibility="Collapsed"/>
-                </Canvas>
-            </ScrollView>
+                </ScrollView>
+                <ScrollView x:Name="graphBoard" Visibility="Collapsed">
+                    <Canvas Height="4096" Width="4096"/>
+                </ScrollView>
+            </Grid>
         </Grid>
     </Grid>
 </Page>
