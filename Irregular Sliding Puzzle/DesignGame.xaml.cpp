@@ -84,14 +84,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				children.Append(CreateButton(i, j, board.GetAt(i).GetAt(j)));
 	}
 
-	void DesignGame::UpdateSize(IInspectable const&, SizeChangedEventArgs const& e)
-	{
-		daughter().Height(e.NewSize().Height);
-		daughter().Width(e.NewSize().Width);
-		son().Width(e.NewSize().Width - 304);
-		ancestor().Height(e.NewSize().Height - 32);
-	}
-
 	void DesignGame::DragStart(IInspectable const&, PointerRoutedEventArgs const& e)
 	{
 		if (const PointerPoint point = e.GetCurrentPoint(baby()); point.Properties().IsLeftButtonPressed())

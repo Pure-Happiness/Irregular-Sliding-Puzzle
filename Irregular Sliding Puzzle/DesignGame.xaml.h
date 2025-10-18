@@ -9,7 +9,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		void Init();
 		void Init(uint8_t const& _height, uint8_t const& _width, IVector<IVector<bool>> const& _board);
 
-		void UpdateSize(IInspectable const&, SizeChangedEventArgs const& e);
 		void DragStart(IInspectable const&, PointerRoutedEventArgs const& e);
 		void DragEnd(IInspectable const&, PointerRoutedEventArgs const& e);
 		void ToGraphMode(IInspectable const&, RoutedEventArgs const&);
