@@ -83,7 +83,7 @@
 		            BorderBrush="{ThemeResource ControlElevationBorderBrush}"
 		            VerticalAlignment="Center"
 		            HorizontalAlignment="Right"
-		            Background="{ThemeResource ControlFillColorDefaultBrush}"
+		            Background="{ThemeResource AccentFillColorDefaultBrush}"
 		            Tapped="AddVertices"
 		            Visibility="Collapsed">
                     <TextBlock x:Uid="AddVertices"/>
@@ -108,7 +108,7 @@
 		            BorderBrush="{ThemeResource ControlElevationBorderBrush}"
 		            VerticalAlignment="Center"
 		            HorizontalAlignment="Center"
-		            Background="{ThemeResource AccentFillColorDefaultBrush}"
+		            Background="{ThemeResource ControlFillColorDefaultBrush}"
 		            Tapped="AddSegments"
 		            Visibility="Collapsed">
                     <TextBlock x:Uid="AddSegments"/>
@@ -192,7 +192,14 @@
                     </Grid>
                 </ScrollView>
                 <ScrollView x:Name="graphBoard" Visibility="Collapsed">
-                    <Canvas Height="4096" Width="4096"/>
+                    <Canvas
+                        x:Name="draw"
+                        Height="4096"
+                        Width="4096"
+                        Background="Transparent"
+                        PointerPressed="DrawPressed"
+                        PointerMoved="DrawMoved"
+                        PointerReleased="DrawReleased"/>
                 </ScrollView>
             </Grid>
         </Grid>

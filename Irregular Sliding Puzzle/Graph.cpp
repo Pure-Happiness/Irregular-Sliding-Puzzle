@@ -56,14 +56,14 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	void Graph::forEachEdge(EV const& func) const
 	{
-		for (auto const& e : edges | views::keys)
-			func(e);
+		for (auto const& [e, uv] : edges)
+			func(e, uv.first, uv.second);
 	}
 
 	bool Graph::forEachEdge2(EB const& func) const
 	{
-		for (auto const& e : edges | views::keys)
-			if (!func(e))
+		for (auto const& [e, uv] : edges)
+			if (!func(e, uv.first, uv.second))
 				return false;
 		return true;
 	}

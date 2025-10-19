@@ -2,8 +2,8 @@ namespace Irregular_Sliding_Puzzle
 {
     delegate void VV(Object v);
     delegate Boolean VB(Object v);
-	delegate void EV(Object e);
-	delegate Boolean EB(Object e);
+	delegate void EV(Object e, Object u, Object v);
+	delegate Boolean EB(Object e, Object u, Object v);
     delegate void NV(Object e, Object v);
     delegate Boolean NB(Object e, Object v);
     delegate void SillyPair(Object x, Object y);

@@ -23,14 +23,14 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		RowsColumns(baby(), 16, 16);
 		board = single_threaded_vector<IVector<bool>>();
 		const UIElementCollection children = baby().Children();
-		buttons.assign(16, vector<Border>(16, nullptr));
+		cells.assign(16, vector<Border>(16, nullptr));
 		for (uint8_t i{}; i < 16; ++i)
 		{
 			const IVector current = single_threaded_vector<bool>();
 			board.Append(current);
 			for (uint8_t j{}; j < 16; ++j)
 			{
-				children.Append(CreateButton(i, j));
+				children.Append(CreateCell(i, j));
 				current.Append(false);
 			}
 		}
@@ -58,10 +58,29 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		RowsColumns(baby(), height, width);
 		const UIElementCollection children = baby().Children();
 		children.Clear();
-		buttons.assign(height, vector<Border>(width, nullptr));
+		cells.assign(height, vector<Border>(width, nullptr));
 		for (uint8_t i{}; i < height; ++i)
 			for (uint8_t j{}; j < width; ++j)
-				children.Append(CreateButton(i, j, board.GetAt(i).GetAt(j)));
+				children.Append(CreateCell(i, j, board.GetAt(i).GetAt(j)));
+	}
+
+	void DesignGame::Init(GraphP const& _g)
+	{
+		g = _g;
+		const UIElementCollection collection = draw().Children();
+		g.forEachVertex([this, &collection](IInspectable const& v)
+			{
+				collection.Append(CreateVertex(v));
+			});
+		g.forEachEdge([this, &collection](IInspectable const& e, IInspectable const& u, IInspectable const& v)
+			{
+				collection.Append(CreateEdge(e.as<IVector<Point>>(), u, v));
+			});
+	}
+
+	void DesignGame::AsGraphMode()
+	{
+		ToGraphMode(nullptr, nullptr);
 	}
 
 	void DesignGame::DragStart(IInspectable const&, PointerRoutedEventArgs const& e)
@@ -78,7 +97,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		if (const PointerPoint point = e.GetCurrentPoint(baby()); point.Properties().PointerUpdateKind() == PointerUpdateKind::LeftButtonReleased && dragging)
 		{
 			const Point end = point.Position();
-			uint8_t sx = static_cast<uint32_t>(start.X) / 32, sy = static_cast<uint32_t>(start.Y) / 32, ex = static_cast<uint32_t>(end.X) / 32, ey = static_cast<uint32_t>(end.Y) / 32;
+			uint8_t sx = static_cast<uint32_t>(start.X) >> 5, sy = static_cast<uint32_t>(start.Y) >> 5, ex = static_cast<uint32_t>(end.X) >> 5, ey = static_cast<uint32_t>(end.Y) >> 5;
 			if (sx > ex)
 				swap(sx, ex);
 			if (sy > ey)
@@ -91,7 +110,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					{
 						const bool value = !board.GetAt(sy).GetAt(i);
 						board.GetAt(sy).SetAt(i, value);
-						buttons[sy][i].Background(value ? AccentFill() : DefaultFill());
+						cells[sy][i].Background(value ? AccentFill() : DefaultFill());
 					}
 				break;
 			case Write:
@@ -99,7 +118,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					for (uint8_t i = sx; i <= ex; ++i)
 					{
 						board.GetAt(sy).SetAt(i, true);
-						buttons[sy][i].Background(AccentFill());
+						cells[sy][i].Background(AccentFill());
 					}
 				break;
 			case Erase:
@@ -107,15 +126,83 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					for (uint8_t i = sx; i <= ex; ++i)
 					{
 						board.GetAt(sy).SetAt(i, false);
-						buttons[sy][i].Background(DefaultFill());
+						cells[sy][i].Background(DefaultFill());
 					}
 			}
 			dragging = false;
 		}
 	}
 
+	void DesignGame::DrawPressed(IInspectable const&, PointerRoutedEventArgs const& e)
+	{
+		if (const PointerPoint point = e.GetCurrentPoint(draw()); point.Properties().IsLeftButtonPressed())
+		{
+			start = point.Position();
+			dragging = true;
+			if (graph_status == Vertex)
+			{
+				for (auto const& p : vertices | views::keys)
+				{
+					const auto& [cx, cy] = unbox_value<Point>(p);
+					if (const float dx = cx - start.X, dy = cy - start.Y; dx * dx + dy * dy < 32 * 32)
+						return;
+				}
+				const IInspectable bs = box_value(start);
+				g.AddVertex(bs);
+				draw().Children().Append(CreateVertex(bs));
+			}
+		}
+	}
+
+	void DesignGame::DrawMoved(IInspectable const&, PointerRoutedEventArgs const& e)
+	{
+		if (const PointerPoint point = e.GetCurrentPoint(draw()); point.Properties().IsLeftButtonPressed() && dragging && graph_status == Curve)
+			intermediate.push_back(point.Position());
+	}
+
+	void DesignGame::DrawReleased(IInspectable const&, PointerRoutedEventArgs const& e)
+	{
+		if (const PointerPoint point = e.GetCurrentPoint(draw()); point.Properties().PointerUpdateKind() == PointerUpdateKind::LeftButtonReleased && dragging && graph_status != Vertex)
+		{
+			const auto [sx, sy] = start;
+			const auto [ex, ey] = point.Position();
+			IInspectable u = nullptr, v = nullptr;
+			for (const auto& p : vertices | views::keys)
+				if (auto const& [cx, cy] = unbox_value<Point>(p); abs(cx - sx) < 16 && abs(cy - sy) < 16)
+				{
+					u = p;
+					goto suc1;
+				}
+			goto end;
+		suc1:
+			for (const auto& p : vertices | views::keys)
+				if (auto const& [cx, cy] = unbox_value<Point>(p); abs(cx - ex) < 16 && abs(cy - ey) < 16)
+				{
+					v = p;
+					goto suc2;
+				}
+			goto end;
+		suc2:
+			{
+				const IVector<Point> im = single_threaded_vector<Point>();
+				if (graph_status == Curve)
+				{
+					for (Point const& p : intermediate)
+						im.Append(p);
+				}
+				g.AddEdge(im, u, v);
+				draw().Children().Append(CreateEdge(im, u, v));
+			}
+		end:
+			intermediate.clear();
+			dragging = false;
+		}
+	}
+
 	void DesignGame::ToGraphMode(IInspectable const&, RoutedEventArgs const&)
 	{
+		if (g == nullptr)
+			g = Graph();
 		is_graph = true;
 		gridBoard().Visibility(Visibility::Collapsed);
 		graphBoard().Visibility(Visibility::Visible);
@@ -131,6 +218,8 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	void DesignGame::ToGridMode(IInspectable const&, RoutedEventArgs const&)
 	{
+		if (board == nullptr)
+			Init();
 		is_graph = false;
 		gridBoard().Visibility(Visibility::Visible);
 		graphBoard().Visibility(Visibility::Collapsed);
@@ -154,7 +243,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	void DesignGame::AddVertices(IInspectable const&, TappedRoutedEventArgs const&)
 	{
-		status = Vertex;
+		graph_status = Vertex;
 		vertex().Background(AccentFill());
 		segment().Background(DefaultFill());
 		curve().Background(DefaultFill());
@@ -170,7 +259,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	void DesignGame::AddSegments(IInspectable const&, TappedRoutedEventArgs const&)
 	{
-		status = Segment;
+		graph_status = Segment;
 		vertex().Background(DefaultFill());
 		segment().Background(AccentFill());
 		curve().Background(DefaultFill());
@@ -186,7 +275,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	void DesignGame::AddCurves(IInspectable const&, TappedRoutedEventArgs const&)
 	{
-		status = Curve;
+		graph_status = Curve;
 		vertex().Background(DefaultFill());
 		segment().Background(DefaultFill());
 		curve().Background(AccentFill());
@@ -371,32 +460,26 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		return button;
 	}
 
-	Border DesignGame::CreateButton(uint8_t const& x, uint8_t const& y, bool const& v)
+	Border DesignGame::CreateCell(uint8_t const& x, uint8_t const& y, bool const& v)
 	{
-		const Border button;
-		Grid::SetRow(button, x);
-		Grid::SetColumn(button, y);
-		button.BorderThickness({ 1, 1, 1, 1 });
-		button.BorderBrush(ControlBorder());
-		button.Background(v ? AccentFill() : DefaultFill());
-		button.Height(32);
-		button.Width(32);
-		button.PointerPressed([](IInspectable const&, PointerRoutedEventArgs const& e)
-			{
-				e.Handled(false);
-			});
-		button.PointerReleased([](IInspectable const&, PointerRoutedEventArgs const& e)
-			{
-				e.Handled(false);
-			});
-		return buttons[x][y] = button;
+		const Border border;
+		Grid::SetRow(border, x);
+		Grid::SetColumn(border, y);
+		border.BorderThickness({ 1, 1, 1, 1 });
+		border.BorderBrush(ControlBorder());
+		border.Background(v ? AccentFill() : DefaultFill());
+		border.Height(32);
+		border.Width(32);
+		border.PointerPressed(PointerSkip);
+		border.PointerReleased(PointerSkip);
+		return cells[x][y] = border;
 	}
 
-	void DesignGame::ResetButton(Border const& button, uint8_t const& x, uint8_t const& y)
+	void DesignGame::ResetCell(Border const& border, uint8_t const& x, uint8_t const& y)
 	{
-		Grid::SetRow(button, x);
-		Grid::SetColumn(button, y);
-		buttons[x][y] = button;
+		Grid::SetRow(border, x);
+		Grid::SetColumn(border, y);
+		cells[x][y] = border;
 	}
 
 	Button DesignGame::CreateRemoveRow(uint8_t const& row)
@@ -413,17 +496,17 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				board.RemoveAt(row);
 				for (uint8_t i = row + 1; i < height; ++i)
 				{
-					auto& buttonsi = buttons[i];
+					auto& cells_i = cells[i];
 					for (uint8_t j{}; j < width; ++j)
-						ResetButton(buttonsi[j], i - 1, j);
+						ResetCell(cells_i[j], i - 1, j);
 				}
-				buttons.pop_back();
+				cells.pop_back();
 				--height;
 				const UIElementCollection children = baby().Children();
 				children.Clear();
 				DispatcherQueue::GetForCurrentThread().TryEnqueue([this, children]()
 					{
-						for (auto const& i : buttons)
+						for (auto const& i : cells)
 							for (Border const& j : i)
 								children.Append(j);
 					});
@@ -445,9 +528,9 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					board.GetAt(i).RemoveAt(column);
 				for (uint8_t i{}; i < height; ++i)
 				{
-					auto& buttonsi = buttons[i];
+					auto& buttonsi = cells[i];
 					for (uint8_t j = column + 1; j < width; ++j)
-						ResetButton(buttonsi[j], i, j - 1);
+						ResetCell(buttonsi[j], i, j - 1);
 					buttonsi.pop_back();
 				}
 				--width;
@@ -455,7 +538,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				children.Clear();
 				DispatcherQueue::GetForCurrentThread().TryEnqueue([this, children]()
 					{
-						for (auto const& i : buttons)
+						for (auto const& i : cells)
 							for (Border const& j : i)
 								children.Append(j);
 					});
@@ -478,10 +561,10 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					const UIElementCollection children = baby().Children();
 					const IVector current = single_threaded_vector<bool>();
 					board.Append(current);
-					buttons.push_back(vector<Border>(width, nullptr));
+					cells.push_back(vector<Border>(width, nullptr));
 					for (uint8_t j{}; j < width; ++j)
 					{
-						children.Append(CreateButton(height, j));
+						children.Append(CreateCell(height, j));
 						current.Append(false);
 					}
 					++height;
@@ -505,12 +588,60 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					const UIElementCollection children = baby().Children();
 					for (uint8_t i{}; i < height; ++i)
 					{
-						buttons[i].push_back(nullptr);
-						children.Append(CreateButton(i, width));
+						cells[i].push_back(nullptr);
+						children.Append(CreateCell(i, width));
 						board.GetAt(i).Append(false);
 					}
 					++width;
 				}
 			});
+	}
+
+	SEllipse DesignGame::CreateVertex(IInspectable const& p)
+	{
+		const SEllipse ellipse;
+		ellipse.Fill(SolidColorBrush(Colors::SteelBlue()));
+		ellipse.Height(32);
+		ellipse.Width(32);
+		auto const& [X, Y] = unbox_value<Point>(p);
+		Canvas::SetLeft(ellipse, X - 16);
+		Canvas::SetTop(ellipse, Y - 16);
+		Canvas::SetZIndex(ellipse, 1);
+		ellipse.PointerPressed(PointerSkip);
+		ellipse.PointerMoved(PointerSkip);
+		ellipse.PointerReleased(PointerSkip);
+		return vertices[p] = ellipse;
+	}
+
+	Path DesignGame::CreateEdge(IVector<Point> const& p, IInspectable const& u, IInspectable const& v)
+	{
+		const Path path;
+		{
+			const PathGeometry geometry;
+			{
+				const PathFigure figure;
+				{
+					auto last = unbox_value<Point>(u);
+					figure.StartPoint(last);
+					const auto append = [&last, &figure](Point const& next)
+						{
+							const QuadraticBezierSegment segment;
+							segment.Point1({ (last.X + next.X) / 2, (last.Y + next.Y) / 2 });
+							segment.Point2(last = next);
+							figure.Segments().Append(segment);
+						};
+					for (Point const& point : p)
+						append(point);
+					append(unbox_value<Point>(v));
+				}
+				geometry.Figures().Append(figure);
+			}
+			path.Data(geometry);
+		}
+		path.Stroke(SolidColorBrush(Colors::SteelBlue()));
+		path.PointerPressed(PointerSkip);
+		path.PointerMoved(PointerSkip);
+		path.PointerReleased(PointerSkip);
+		return edges[p] = path;
 	}
 }

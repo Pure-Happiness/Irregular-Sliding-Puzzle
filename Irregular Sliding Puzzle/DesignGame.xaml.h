@@ -4,13 +4,23 @@
 
 namespace winrt::Irregular_Sliding_Puzzle::implementation
 {
+	constexpr auto PointerSkip = [](IInspectable const&, PointerRoutedEventArgs const& e)
+		{
+			e.Handled(false);
+		};
+
 	struct DesignGame : DesignGameT<DesignGame>
 	{
 		void Init();
 		void Init(uint8_t const& _height, uint8_t const& _width, IVector<IVector<bool>> const& _board);
+		void Init(GraphP const& _g);
+		void AsGraphMode();
 
 		void DragStart(IInspectable const&, PointerRoutedEventArgs const& e);
 		void DragEnd(IInspectable const&, PointerRoutedEventArgs const& e);
+		void DrawPressed(IInspectable const&, PointerRoutedEventArgs const& e);
+		void DrawMoved(IInspectable const&, PointerRoutedEventArgs const& e);
+		void DrawReleased(IInspectable const&, PointerRoutedEventArgs const& e);
 		void ToGraphMode(IInspectable const&, RoutedEventArgs const&);
 		void ToGridMode(IInspectable const&, RoutedEventArgs const&);
 		void AsWrite(IInspectable const&, TappedRoutedEventArgs const&);
@@ -27,20 +37,27 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	private:
 		uint8_t height = 16, width = 16;
 		IVector<IVector<bool>> board;
-		vector<vector<Border>> buttons;
-		enum :uint8_t { Reverse, Write, Erase, Vertex, Segment, Curve } status;
+		vector<vector<Border>> cells;
+		enum :uint8_t { Reverse, Write, Erase } status;
+		enum :uint8_t { Vertex, Segment, Curve } graph_status;
 		Point start;
+		vector<Point> intermediate;
 		bool dragging, loaded, is_graph;
+		GraphP g = nullptr;
+		map<IInspectable, SEllipse> vertices;
+		map<IVector<Point>, Path> edges;
 
 		static FontIcon RemoveIcon();
 		static FontIcon AddIcon();
 		static Button AddRemove(FontIcon const& icon, auto&& func);
-		Border CreateButton(uint8_t const& x, uint8_t const& y, bool const& v = false);
-		void ResetButton(Border const& button, uint8_t const& x, uint8_t const& y);
+		Border CreateCell(uint8_t const& x, uint8_t const& y, bool const& v = false);
+		void ResetCell(Border const& border, uint8_t const& x, uint8_t const& y);
 		Button CreateRemoveRow(uint8_t const& row);
 		Button CreateRemoveColumn(uint8_t const& column);
 		Button CreateAddRow();
 		Button CreateAddColumn();
+		SEllipse CreateVertex(IInspectable const& p);
+		Path CreateEdge(IVector<Point> const& p, IInspectable const& u, IInspectable const& v);
 	};
 }
 
