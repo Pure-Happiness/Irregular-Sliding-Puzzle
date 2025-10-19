@@ -35,71 +35,9 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					current.Append(*pt);
 			}
 		}
-		{
-			const RowDefinitionCollection rows = mummy().RowDefinitions();
-			for (uint8_t i{}; i < height; ++i)
-				rows.Append(AutoRow());
-		}
-		{
-			const ColumnDefinitionCollection columns = mummy().ColumnDefinitions();
-			for (uint8_t i{}; i < width; ++i)
-				columns.Append(AutoColumn());
-		}
-		{
-			const UIElementCollection children = mummy().Children();
-			for (uint8_t i{}; i < height; ++i)
-				for (uint8_t j{}; j < width; ++j)
-					if (board.GetAt(i).GetAt(j))
-					{
-						children.Append(CreateGround(i, j));
-						++num;
-					}
-					else
-						children.Append(CreateWall(i, j));
-		}
-		{
-			const RowDefinitionCollection rows = target().RowDefinitions();
-			for (uint8_t i{}; i < height; ++i)
-				rows.Append(AutoRow());
-		}
-		{
-			const ColumnDefinitionCollection columns = target().ColumnDefinitions();
-			for (uint8_t i{}; i < width; ++i)
-				columns.Append(AutoColumn());
-		}
-		{
-			const UIElementCollection children = target().Children();
-			uint16_t now = 1;
-			for (uint8_t i{}; i < height; ++i)
-				for (uint8_t j{}; j < width; ++j)
-					if (board.GetAt(i).GetAt(j))
-					{
-						const Border border = CreateGround(i, j);
-						border.BorderThickness({ 1, 1, 1, 1 });
-						border.BorderBrush(ControlBorder());
-						if (now < num)
-						{
-							const TextBlock text;
-							text.Text(to_hstring(now++));
-							text.VerticalAlignment(VerticalAlignment::Center);
-							text.HorizontalAlignment(HorizontalAlignment::Center);
-							border.Child(text);
-						}
-						children.Append(border);
-					}
-					else
-						children.Append(CreateWall(i, j));
-		}
-		{
-			const RowDefinitionCollection rows = baby().RowDefinitions();
-			for (uint8_t i{}; i < height; ++i)
-				rows.Append(AutoRow());
-		}
-		{
-			const ColumnDefinitionCollection columns = baby().ColumnDefinitions();
-			for (uint8_t i{}; i < width; ++i)
-				columns.Append(AutoColumn());
-		}
+		CreateBackground(mummy(), height, width, board, num);
+		CreateTarget(target(), height, width, board, num);
+		RowsColumns(baby(), height, width);
 		{
 			const UIElementCollection children = baby().Children();
 			for (uint8_t i{}; i < height; ++i)

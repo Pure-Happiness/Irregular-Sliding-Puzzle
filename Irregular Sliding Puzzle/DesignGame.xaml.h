@@ -32,6 +32,9 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		Point start;
 		bool dragging, loaded, is_graph;
 
+		static FontIcon RemoveIcon();
+		static FontIcon AddIcon();
+		static Button AddRemove(FontIcon const& icon, auto&& func);
 		Border CreateButton(uint8_t const& x, uint8_t const& y, bool const& v = false);
 		void ResetButton(Border const& button, uint8_t const& x, uint8_t const& y);
 		Button CreateRemoveRow(uint8_t const& row);

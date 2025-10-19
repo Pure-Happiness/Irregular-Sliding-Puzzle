@@ -115,17 +115,6 @@ inline ColumnDefinition AutoColumn()
 	return column;
 }
 
-inline Border CreateGround(uint8_t const& x, uint8_t const& y)
-{
-	const Border border;
-	Grid::SetRow(border, x);
-	Grid::SetColumn(border, y);
-	border.Background(SolidFill());
-	border.Height(32);
-	border.Width(32);
-	return border;
-}
-
 inline Border CreateWall(uint8_t const& x, uint8_t const& y)
 {
 	const Border border;
@@ -136,7 +125,66 @@ inline Border CreateWall(uint8_t const& x, uint8_t const& y)
 	return border;
 }
 
+inline Border CreateGround(uint8_t const& x, uint8_t const& y)
+{
+	const Border border = CreateWall(x, y);
+	border.Background(SolidFill());
+	return border;
+}
+
 auto SillyPairAssign(auto& a, auto& b)
 {
 	return [&a, &b](IInspectable const& x, IInspectable const& y) { a = x, b = y; };
+}
+
+inline void RowsColumns(Grid const& grid, uint8_t const& height, uint8_t const& width)
+{
+	const RowDefinitionCollection rows = grid.RowDefinitions();
+	for (uint8_t i{}; i < height; ++i)
+		rows.Append(AutoRow());
+	const ColumnDefinitionCollection columns = grid.ColumnDefinitions();
+	for (uint8_t i{}; i < width; ++i)
+		columns.Append(AutoColumn());
+}
+
+inline void CreateBackground(Grid const& grid, uint8_t const& height, uint8_t const& width, IVector<IVector<bool>> const& board, uint16_t& num)
+{
+	RowsColumns(grid, height, width);
+	const UIElementCollection children = grid.Children();
+	for (uint8_t i{}; i < height; ++i)
+		for (uint8_t j{}; j < width; ++j)
+			if (board.GetAt(i).GetAt(j))
+			{
+				children.Append(CreateGround(i, j));
+				++num;
+			}
+			else
+				children.Append(CreateWall(i, j));
+}
+
+inline void CreateTarget(Grid const& grid, uint8_t const& height, uint8_t const& width, IVector<IVector<bool>> const& board, uint16_t const& num)
+{
+	RowsColumns(grid, height, width);
+	const UIElementCollection children = grid.Children();
+	uint16_t now = 1;
+	for (uint8_t i{}; i < height; ++i)
+		for (uint8_t j{}; j < width; ++j)
+			if (board.GetAt(i).GetAt(j))
+			{
+				const Border border = CreateGround(i, j);
+				if (now < num)
+				{
+					border.BorderThickness({ 1, 1, 1, 1 });
+					border.BorderBrush(ControlBorder());
+					border.CornerRadius({ 4, 4, 4, 4 });
+					const TextBlock text;
+					text.Text(to_hstring(now++));
+					text.VerticalAlignment(VerticalAlignment::Center);
+					text.HorizontalAlignment(HorizontalAlignment::Center);
+					border.Child(text);
+				}
+				children.Append(border);
+			}
+			else
+				children.Append(CreateWall(i, j));
 }

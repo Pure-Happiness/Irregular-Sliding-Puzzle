@@ -20,16 +20,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				dad.Append(CreateRemoveColumn(i));
 			dad.Append(CreateAddColumn());
 		}
-		{
-			const RowDefinitionCollection rows = baby().RowDefinitions();
-			for (uint8_t i{}; i < 16; ++i)
-				rows.Append(AutoRow());
-		}
-		{
-			const ColumnDefinitionCollection columns = baby().ColumnDefinitions();
-			for (uint8_t i{}; i < 16; ++i)
-				columns.Append(AutoColumn());
-		}
+		RowsColumns(baby(), 16, 16);
 		board = single_threaded_vector<IVector<bool>>();
 		const UIElementCollection children = baby().Children();
 		buttons.assign(16, vector<Border>(16, nullptr));
@@ -64,18 +55,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				dad.Append(CreateRemoveColumn(i));
 			dad.Append(CreateAddColumn());
 		}
-		{
-			const RowDefinitionCollection rows = baby().RowDefinitions();
-			rows.Clear();
-			for (uint8_t i{}; i < height; ++i)
-				rows.Append(AutoRow());
-		}
-		{
-			const ColumnDefinitionCollection columns = baby().ColumnDefinitions();
-			columns.Clear();
-			for (uint8_t i{}; i < width; ++i)
-				columns.Append(AutoColumn());
-		}
+		RowsColumns(baby(), height, width);
 		const UIElementCollection children = baby().Children();
 		children.Clear();
 		buttons.assign(height, vector<Border>(width, nullptr));
@@ -366,6 +346,31 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		}
 	}
 
+	FontIcon DesignGame::RemoveIcon()
+	{
+		const FontIcon icon;
+		icon.Glyph(L"\uECC9");
+		return icon;
+	}
+
+	FontIcon DesignGame::AddIcon()
+	{
+		const FontIcon icon;
+		icon.Glyph(L"\uECC8");
+		return icon;
+	}
+
+	Button DesignGame::AddRemove(FontIcon const& icon, auto&& func)
+	{
+		const Button button;
+		button.Padding({});
+		button.Height(32);
+		button.Width(32);
+		button.Content(icon);
+		button.Click(func);
+		return button;
+	}
+
 	Border DesignGame::CreateButton(uint8_t const& x, uint8_t const& y, bool const& v)
 	{
 		const Border button;
@@ -396,16 +401,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	Button DesignGame::CreateRemoveRow(uint8_t const& row)
 	{
-		const Button button;
-		button.Padding({});
-		button.Height(32);
-		button.Width(32);
-		{
-			const FontIcon icon;
-			icon.Glyph(L"\uECC9");
-			button.Content(icon);
-		}
-		button.Click([this, row](IInspectable const&, RoutedEventArgs const&)
+		return AddRemove(RemoveIcon(), [this, row](IInspectable const&, RoutedEventArgs const&)
 			{
 				{
 					const UIElementCollection mum = mother().Children();
@@ -432,21 +428,11 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 								children.Append(j);
 					});
 			});
-		return button;
 	}
 
 	Button DesignGame::CreateRemoveColumn(uint8_t const& column)
 	{
-		const Button button;
-		button.Padding({});
-		button.Height(32);
-		button.Width(32);
-		{
-			const FontIcon icon;
-			icon.Glyph(L"\uECC9");
-			button.Content(icon);
-		}
-		button.Click([this, column](IInspectable const&, RoutedEventArgs const&)
+		return AddRemove(RemoveIcon(), [this, column](IInspectable const&, RoutedEventArgs const&)
 			{
 				{
 					const UIElementCollection dad = father().Children();
@@ -474,21 +460,11 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 								children.Append(j);
 					});
 			});
-		return button;
 	}
 
 	Button DesignGame::CreateAddRow()
 	{
-		const Button button;
-		button.Padding({});
-		button.Height(32);
-		button.Width(32);
-		{
-			const FontIcon icon;
-			icon.Glyph(L"\uECC8");
-			button.Content(icon);
-		}
-		button.Click([this](IInspectable const&, RoutedEventArgs const&)
+		return AddRemove(AddIcon(), [this](IInspectable const&, RoutedEventArgs const&)
 			{
 				if (height < 0xFF)
 				{
@@ -511,21 +487,11 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					++height;
 				}
 			});
-		return button;
 	}
 
 	Button DesignGame::CreateAddColumn()
 	{
-		const Button button;
-		button.Padding({});
-		button.Height(32);
-		button.Width(32);
-		{
-			const FontIcon icon;
-			icon.Glyph(L"\uECC8");
-			button.Content(icon);
-		}
-		button.Click([this](IInspectable const&, RoutedEventArgs const&)
+		return AddRemove(AddIcon(), [this](IInspectable const&, RoutedEventArgs const&)
 			{
 				if (width < 0xFF)
 				{
@@ -546,6 +512,5 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					++width;
 				}
 			});
-		return button;
 	}
 }

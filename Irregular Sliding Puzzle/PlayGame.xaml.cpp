@@ -13,77 +13,15 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		board = _board;
 		numbers.assign(height, vector<uint16_t>(width));
 		buttons.assign(height, vector<Button>(width, nullptr));
-		{
-			const RowDefinitionCollection rows = mummy().RowDefinitions();
-			for (uint8_t i{}; i < height; ++i)
-				rows.Append(AutoRow());
-		}
-		{
-			const ColumnDefinitionCollection columns = mummy().ColumnDefinitions();
-			for (uint8_t i{}; i < width; ++i)
-				columns.Append(AutoColumn());
-		}
-		{
-			const UIElementCollection children = mummy().Children();
-			for (uint8_t i{}; i < height; ++i)
-				for (uint8_t j{}; j < width; ++j)
-					if (board.GetAt(i).GetAt(j))
-					{
-						children.Append(CreateGround(i, j));
-						++num;
-					}
-					else
-						children.Append(CreateWall(i, j));
-		}
+		CreateBackground(mummy(), height, width, board, num);
 		if (!num)
 		{
 			Frame().GoBack();
 			Frame().Content().as<DesignGame>().Init(height, width, board);
 			return;
 		}
-		{
-			const RowDefinitionCollection rows = target().RowDefinitions();
-			for (uint8_t i{}; i < height; ++i)
-				rows.Append(AutoRow());
-		}
-		{
-			const ColumnDefinitionCollection columns = target().ColumnDefinitions();
-			for (uint8_t i{}; i < width; ++i)
-				columns.Append(AutoColumn());
-		}
-		{
-			const UIElementCollection children = target().Children();
-			uint16_t now = 1;
-			for (uint8_t i{}; i < height; ++i)
-				for (uint8_t j{}; j < width; ++j)
-					if (board.GetAt(i).GetAt(j))
-					{
-						const Border border = CreateGround(i, j);
-						border.BorderThickness({ 1, 1, 1, 1 });
-						border.BorderBrush(ControlBorder());
-						if (now < num)
-						{
-							const TextBlock text;
-							text.Text(to_hstring(now++));
-							text.VerticalAlignment(VerticalAlignment::Center);
-							text.HorizontalAlignment(HorizontalAlignment::Center);
-							border.Child(text);
-						}
-						children.Append(border);
-					}
-					else
-						children.Append(CreateWall(i, j));
-		}
-		{
-			const RowDefinitionCollection rows = baby().RowDefinitions();
-			for (uint8_t i{}; i < height; ++i)
-				rows.Append(AutoRow());
-		}
-		{
-			const ColumnDefinitionCollection columns = baby().ColumnDefinitions();
-			for (uint8_t i{}; i < width; ++i)
-				columns.Append(AutoColumn());
-		}
+		CreateTarget(target(), height, width, board, num);
+		RowsColumns(baby(), height, width);
 		{
 			const UIElementCollection children = baby().Children();
 			uint16_t now = 1;
