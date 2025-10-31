@@ -17,6 +17,9 @@
     <Page Include="Settings.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="PlayGraph.xaml">
+      <Filter>Pages</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />

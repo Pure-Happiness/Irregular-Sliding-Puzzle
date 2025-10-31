@@ -27,26 +27,19 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		edges[e] = { u, v };
 	}
 
-	void Graph::EraseEdge(IInspectable const& e)
+	void Graph::EraseEdge(IInspectable const& e, IInspectable const& u, IInspectable const& v)
 	{
-		auto const& [u, v] = edges.at(e);
 		adj.at(u).erase(e), adj.at(v).erase(e);
 		edges.erase(e);
 	}
 
-	void Graph::GetEdge(IInspectable const& e, SillyPair const& p) const
-	{
-		auto const& [u, v] = edges.at(e);
-		p(u, v);
-	}
-
-	void Graph::forEachVertex(VV const& func) const
+	void Graph::ForEachVertex(VV const& func) const
 	{
 		for (auto const& v : adj | views::keys)
 			func(v);
 	}
 
-	bool Graph::forEachVertex2(VB const& func) const
+	bool Graph::ForEachVertex2(VB const& func) const
 	{
 		for (auto const& v : adj | views::keys)
 			if (!func(v))
@@ -54,13 +47,13 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		return true;
 	}
 
-	void Graph::forEachEdge(EV const& func) const
+	void Graph::ForEachEdge(EV const& func) const
 	{
 		for (auto const& [e, uv] : edges)
 			func(e, uv.first, uv.second);
 	}
 
-	bool Graph::forEachEdge2(EB const& func) const
+	bool Graph::ForEachEdge2(EB const& func) const
 	{
 		for (auto const& [e, uv] : edges)
 			if (!func(e, uv.first, uv.second))
@@ -90,6 +83,11 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	uint32_t Graph::EdgeCount() const
 	{
 		return edges.size();
+	}
+
+	uint32_t Graph::Degree(IInspectable const& v) const
+	{
+		return adj.at(v).size();
 	}
 
 	void Graph::ClearEdges()

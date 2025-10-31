@@ -38,9 +38,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	void DesignGame::Init(uint8_t const& _height, uint8_t const& _width, IVector<IVector<bool>> const& _board)
 	{
-		height = _height;
-		width = _width;
-		board = _board;
+		height = _height, width = _width, board = _board;
 		{
 			const UIElementCollection mum = mother().Children();
 			mum.Clear();
@@ -68,11 +66,11 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	{
 		g = _g;
 		const UIElementCollection collection = draw().Children();
-		g.forEachVertex([this, &collection](IInspectable const& v)
+		g.ForEachVertex([this, &collection](IInspectable const& v)
 			{
 				collection.Append(CreateVertex(v));
 			});
-		g.forEachEdge([this, &collection](IInspectable const& e, IInspectable const& u, IInspectable const& v)
+		g.ForEachEdge([this, &collection](IInspectable const& e, IInspectable const& u, IInspectable const& v)
 			{
 				collection.Append(CreateEdge(e.as<IVector<Point>>(), u, v));
 			});
@@ -321,8 +319,18 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	void DesignGame::StartGame(IInspectable const&, RoutedEventArgs const&) const
 	{
-		Frame().Navigate(xaml_typename<PlayGame>());
-		Frame().Content().as<PlayGame>().Init(height, width, board);
+		if (is_graph)
+		{
+			o_height = height, o_width = width, o_board = board;
+			Frame().Navigate(xaml_typename<PlayGraph>());
+			Frame().Content().as<PlayGraph>().Init(g);
+		}
+		else
+		{
+			o_graph = g;
+			Frame().Navigate(xaml_typename<PlayGame>());
+			Frame().Content().as<PlayGame>().Init(height, width, board);
+		}
 	}
 
 	fire_and_forget DesignGame::DisplayRecords(IInspectable const&, RoutedEventArgs const&)
@@ -416,9 +424,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 							for (uint8_t* data = buffer.data(), *end = data + buffer.Length(); data < end; ++data)
 								content.Append(*data);
 							Frame().Navigate(xaml_typename<ReplayGame>());
-							o_height = height;
-							o_width = width;
-							o_board = board;
+							o_height = height, o_width = width, o_board = board, o_graph = g;
 							title_bar.IsBackButtonVisible(true);
 							(alive = Frame().Content().as<ReplayGame>()).Init(content);
 						});
@@ -433,6 +439,17 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				st.pop();
 			}
 		}
+	}
+
+	void DesignGame::AllSkip(UIElement const& element)
+	{
+		constexpr auto PointerSkip = [](IInspectable const&, PointerRoutedEventArgs const& e)
+			{
+				e.Handled(false);
+			};
+		element.PointerPressed(PointerSkip);
+		element.PointerMoved(PointerSkip);
+		element.PointerReleased(PointerSkip);
 	}
 
 	FontIcon DesignGame::RemoveIcon()
@@ -462,16 +479,11 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	Border DesignGame::CreateCell(uint8_t const& x, uint8_t const& y, bool const& v)
 	{
-		const Border border;
-		Grid::SetRow(border, x);
-		Grid::SetColumn(border, y);
+		const Border border = CommonBorder(x, y);
 		border.BorderThickness({ 1, 1, 1, 1 });
 		border.BorderBrush(ControlBorder());
 		border.Background(v ? AccentFill() : DefaultFill());
-		border.Height(32);
-		border.Width(32);
-		border.PointerPressed(PointerSkip);
-		border.PointerReleased(PointerSkip);
+		AllSkip(border);
 		return cells[x][y] = border;
 	}
 
@@ -599,49 +611,43 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	SEllipse DesignGame::CreateVertex(IInspectable const& p)
 	{
-		const SEllipse ellipse;
+		const SEllipse ellipse = CommonEllipse(p);
 		ellipse.Fill(SolidColorBrush(Colors::SteelBlue()));
-		ellipse.Height(32);
-		ellipse.Width(32);
-		auto const& [X, Y] = unbox_value<Point>(p);
-		Canvas::SetLeft(ellipse, X - 16);
-		Canvas::SetTop(ellipse, Y - 16);
-		Canvas::SetZIndex(ellipse, 1);
-		ellipse.PointerPressed(PointerSkip);
-		ellipse.PointerMoved(PointerSkip);
-		ellipse.PointerReleased(PointerSkip);
+		AllSkip(ellipse);
+		ellipse.RightTapped([this, p, ellipse](IInspectable const&, RightTappedRoutedEventArgs const&)
+			{
+				{
+					const UIElementCollection children = draw().Children();
+					g.ForEachNeighbor(p, [this, &children](IInspectable const& e, IInspectable const&)
+						{
+							uint32_t index;
+							children.IndexOf(edges[e], index);
+							children.RemoveAt(index);
+						});
+					uint32_t index;
+					children.IndexOf(ellipse, index);
+					children.RemoveAt(index);
+				}
+				g.EraseVertex(p);
+			});
 		return vertices[p] = ellipse;
 	}
 
-	Path DesignGame::CreateEdge(IVector<Point> const& p, IInspectable const& u, IInspectable const& v)
+	SPolyline DesignGame::CreateEdge(IVector<Point> const& p, IInspectable const& u, IInspectable const& v)
 	{
-		const Path path;
-		{
-			const PathGeometry geometry;
+		const SPolyline pl = CommonLine(p, u, v);
+		pl.Stroke(SolidColorBrush(Colors::SteelBlue()));
+		AllSkip(pl);
+		pl.RightTapped([this, p, u, v, pl](IInspectable const&, RightTappedRoutedEventArgs const&)
 			{
-				const PathFigure figure;
 				{
-					auto last = unbox_value<Point>(u);
-					figure.StartPoint(last);
-					const auto append = [&last, &figure](Point const& next)
-						{
-							const QuadraticBezierSegment segment;
-							segment.Point1({ (last.X + next.X) / 2, (last.Y + next.Y) / 2 });
-							segment.Point2(last = next);
-							figure.Segments().Append(segment);
-						};
-					for (Point const& point : p)
-						append(point);
-					append(unbox_value<Point>(v));
+					const UIElementCollection children = draw().Children();
+					uint32_t index;
+					children.IndexOf(pl, index);
+					children.RemoveAt(index);
 				}
-				geometry.Figures().Append(figure);
-			}
-			path.Data(geometry);
-		}
-		path.Stroke(SolidColorBrush(Colors::SteelBlue()));
-		path.PointerPressed(PointerSkip);
-		path.PointerMoved(PointerSkip);
-		path.PointerReleased(PointerSkip);
-		return edges[p] = path;
+				g.EraseEdge(p, u, v);
+			});
+		return edges[p] = pl;
 	}
 }

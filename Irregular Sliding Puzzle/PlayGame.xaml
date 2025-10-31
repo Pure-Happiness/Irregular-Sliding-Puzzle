@@ -65,21 +65,11 @@
             Grid.Column="1"
             CornerRadius="8,0,0,0"
             Background="{ThemeResource LayerFillColorDefaultBrush}">
-            <Canvas
-                VerticalAlignment="Top"
-                HorizontalAlignment="Left">
-                <Grid
-		            x:Name="mummy"
-		            Padding="32"
-		            VerticalAlignment="Top"
-		            HorizontalAlignment="Left"/>
-                <Grid
-                    Canvas.ZIndex="1"
-                    x:Name="baby"
-                    Padding="32"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"/>
-            </Canvas>
+            <Grid
+		        x:Name="baby"
+		        Padding="32"
+		        VerticalAlignment="Top"
+		        HorizontalAlignment="Left"/>
         </ScrollView>
     </Grid>
 </Page>

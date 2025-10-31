@@ -1,0 +1,10 @@
+import "Graph.idl";
+namespace Irregular_Sliding_Puzzle
+{
+    [default_interface]
+    runtimeclass PlayGraph : Microsoft.UI.Xaml.Controls.Page
+    {
+        PlayGraph();
+        void Init(Graph g);
+    }
+}

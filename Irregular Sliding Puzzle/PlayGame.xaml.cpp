@@ -8,20 +8,16 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 {
 	void PlayGame::Init(uint8_t const& _height, uint8_t const& _width, IVector<IVector<bool>> const& _board)
 	{
-		height = _height;
-		width = _width;
-		board = _board;
+		height = _height, width = _width, board = _board;
 		numbers.assign(height, vector<uint16_t>(width));
 		buttons.assign(height, vector<Button>(width, nullptr));
-		CreateBackground(mummy(), height, width, board, num);
+		CreateBackground(baby(), height, width, board, num);
 		if (!num)
 		{
-			Frame().GoBack();
-			Frame().Content().as<DesignGame>().Init(height, width, board);
+			GoBack();
 			return;
 		}
 		CreateTarget(target(), height, width, board, num);
-		RowsColumns(baby(), height, width);
 		{
 			const UIElementCollection children = baby().Children();
 			uint16_t now = 1;
@@ -31,9 +27,9 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 						if (now < num)
 							children.Append(CreateButton(i, j, numbers[i][j] = now++));
 						else
-							children.Append(empty = CreateWall(ex = i, ey = j));
+							children.Append(empty = CommonBorder(ex = i, ey = j));
 					else
-						children.Append(CreateWall(i, j));
+						children.Append(CommonBorder(i, j));
 		}
 		{
 			vector pos(height, vector<vector<pair<uint8_t, uint8_t>>>(width));
@@ -52,8 +48,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 							pairs.emplace_back(k, j);
 						if (pairs.empty())
 						{
-							Frame().GoBack();
-							Frame().Content().as<DesignGame>().Init(height, width, board);
+							GoBack();
 							return;
 						}
 					}
@@ -83,13 +78,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					record.push_back(num & 0xFF);
 					record.push_back(num >> 8);
 				}
-		timer.Interval(1s);
-		timer.Tick([this](IInspectable const&, IInspectable const&)
-			{
-				++time;
-				const uint32_t minutes = time / 60, seconds = time - minutes * 60;
-				Timer().Label((minutes < 10 ? L"0" : L"") + to_hstring(minutes) + L":" + (seconds < 10 ? L"0" : L"") + to_hstring(seconds));
-			});
+		SetTimer(timer, time, Timer());
 		timer.Start();
 		start_time = chrono::steady_clock::now();
 	}
@@ -99,7 +88,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		timer.Stop();
 		pause().Visibility(Visibility::Collapsed);
 		resume().Visibility(Visibility::Visible);
-		mummy().Visibility(Visibility::Collapsed);
 		baby().Visibility(Visibility::Collapsed);
 	}
 
@@ -107,7 +95,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	{
 		pause().Visibility(Visibility::Visible);
 		resume().Visibility(Visibility::Collapsed);
-		mummy().Visibility(Visibility::Visible);
 		baby().Visibility(Visibility::Visible);
 		timer.Start();
 	}
@@ -116,19 +103,21 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	{
 		timer.Stop();
 		WriteRecord();
+		GoBack();
+	}
+
+	void PlayGame::GoBack() const
+	{
 		Frame().GoBack();
-		Frame().Content().as<DesignGame>().Init(height, width, board);
+		const auto content = Frame().Content().as<DesignGame>();
+		content.Init(height, width, board);
+		if (o_graph)
+			content.Init(o_graph);
 	}
 
 	Button PlayGame::CreateButton(uint8_t const& x, uint8_t const& y, uint16_t const& n)
 	{
-		const Button button;
-		Grid::SetRow(button, x);
-		Grid::SetColumn(button, y);
-		button.Height(32);
-		button.Width(32);
-		button.Padding({});
-		button.Content(box_value(to_hstring(n)));
+		const Button button = CommonButton(x, y, n);
 		button.Click([this, button](IInspectable const&, RoutedEventArgs const&)
 			{
 				{
@@ -156,8 +145,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					dialog.CloseButtonText(ResourceLoader().GetString(L"Back"));
 					dialog.CloseButtonClick([this](ContentDialog const&, ContentDialogButtonClickEventArgs const&)
 						{
-							Frame().GoBack();
-							Frame().Content().as<DesignGame>().Init(height, width, board);
+							GoBack();
 						});
 					dialog.DefaultButton(ContentDialogButton::Close);
 					dialog.XamlRoot(XamlRoot());
@@ -167,11 +155,14 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		return buttons[x][y] = button;
 	}
 
-	void PlayGame::ResetButton(Button const& button, uint8_t const& x, uint8_t const& y)
+	void PlayGame::MoveRaw(uint8_t const& x, uint8_t const& y)
 	{
-		Grid::SetRow(button, x);
-		Grid::SetColumn(button, y);
-		buttons[x][y] = button;
+		const Button& button = buttons[x][y];
+		Grid::SetRow(button, ex);
+		Grid::SetColumn(button, ey);
+		buttons[ex][ey] = button;
+		numbers[ex][ey] = numbers[x][y];
+		ex = x, ey = y;
 	}
 
 	bool PlayGame::Complete() const
@@ -187,17 +178,13 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	void PlayGame::Move(uint8_t const& x, uint8_t const& y)
 	{
 		if (x == ex)
-		{
 			if (y < ey)
 			{
 				for (uint8_t i = y; i < ey; ++i)
 					if (!board.GetAt(x).GetAt(i))
 						return;
 				for (uint8_t i = ey; i-- > y;)
-				{
-					ResetButton(buttons[x][i], x, i + 1);
-					numbers[x][i + 1] = numbers[x][i];
-				}
+					MoveRaw(x, i);
 			}
 			else
 			{
@@ -205,25 +192,16 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					if (!board.GetAt(x).GetAt(i))
 						return;
 				for (uint8_t i = ey; i++ < y;)
-				{
-					ResetButton(buttons[x][i], x, i - 1);
-					numbers[x][i - 1] = numbers[x][i];
-				}
+					MoveRaw(x, i);
 			}
-			ey = y;
-		}
 		else if (y == ey)
-		{
 			if (x < ex)
 			{
 				for (uint8_t i = x; i < ex; ++i)
 					if (!board.GetAt(i).GetAt(y))
 						return;
 				for (uint8_t i = ex; i-- > x;)
-				{
-					ResetButton(buttons[i][y], i + 1, y);
-					numbers[i + 1][y] = numbers[i][y];
-				}
+					MoveRaw(i, y);
 			}
 			else
 			{
@@ -231,14 +209,8 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					if (!board.GetAt(i).GetAt(y))
 						return;
 				for (uint8_t i = ex; i++ < x;)
-				{
-					ResetButton(buttons[i][y], i - 1, y);
-					numbers[i - 1][y] = numbers[i][y];
-				}
+					MoveRaw(i, y);
 			}
-			ex = x;
-		}
-		numbers[ex][ey] = 0;
 		Grid::SetRow(empty, ex);
 		Grid::SetColumn(empty, ey);
 	}

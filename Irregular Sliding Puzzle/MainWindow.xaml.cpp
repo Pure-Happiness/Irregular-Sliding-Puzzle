@@ -23,7 +23,9 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	{
 		alive.Timer().Stop();
 		alive.Frame().GoBack();
-		alive.Frame().Content().as<DesignGame>().Init(o_height, o_width, o_board);
+		const auto page = alive.Frame().Content().as<DesignGame>();
+		page.Init(o_height, o_width, o_board);
+		page.Init(o_graph);
 		title_bar.IsBackButtonVisible(false);
 	}
 }

@@ -27,7 +27,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		stack<pair<uint8_t, uint8_t>> empties;
 		Border empty = nullptr;
 
-		void ResetButton(Button const& button, uint8_t const& x, uint8_t const& y);
+		void MoveRaw(uint8_t const& x, uint8_t const& y);
 		void Move(uint8_t const& x, uint8_t const& y);
 	};
 }

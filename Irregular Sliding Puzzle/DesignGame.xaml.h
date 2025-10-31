@@ -4,11 +4,6 @@
 
 namespace winrt::Irregular_Sliding_Puzzle::implementation
 {
-	constexpr auto PointerSkip = [](IInspectable const&, PointerRoutedEventArgs const& e)
-		{
-			e.Handled(false);
-		};
-
 	struct DesignGame : DesignGameT<DesignGame>
 	{
 		void Init();
@@ -45,8 +40,9 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		bool dragging, loaded, is_graph;
 		GraphP g = nullptr;
 		map<IInspectable, SEllipse> vertices;
-		map<IVector<Point>, Path> edges;
+		map<IInspectable, SPolyline> edges;
 
+		static void AllSkip(UIElement const& element);
 		static FontIcon RemoveIcon();
 		static FontIcon AddIcon();
 		static Button AddRemove(FontIcon const& icon, auto&& func);
@@ -57,7 +53,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		Button CreateAddRow();
 		Button CreateAddColumn();
 		SEllipse CreateVertex(IInspectable const& p);
-		Path CreateEdge(IVector<Point> const& p, IInspectable const& u, IInspectable const& v);
+		SPolyline CreateEdge(IVector<Point> const& p, IInspectable const& u, IInspectable const& v);
 	};
 }
 

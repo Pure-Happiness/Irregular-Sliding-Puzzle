@@ -35,29 +35,19 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					current.Append(*pt);
 			}
 		}
-		CreateBackground(mummy(), height, width, board, num);
+		CreateBackground(baby(), height, width, board, num);
 		CreateTarget(target(), height, width, board, num);
-		RowsColumns(baby(), height, width);
 		{
 			const UIElementCollection children = baby().Children();
 			for (uint8_t i{}; i < height; ++i)
 				for (uint8_t j{}; j < width; ++j)
 					if (board.GetAt(i).GetAt(j))
 						if (const uint16_t& val = content.GetAt(read_pos++) | content.GetAt(read_pos++) << 8)
-						{
-							const Button button;
-							Grid::SetRow(button, i);
-							Grid::SetColumn(button, j);
-							button.Height(32);
-							button.Width(32);
-							button.Padding({});
-							button.Content(box_value(to_hstring(val)));
-							children.Append(buttons[i][j] = button);
-						}
+							children.Append(buttons[i][j] = CommonButton(i, j, val));
 						else
-							children.Append(empty = CreateWall(ex = i, ey = j));
+							children.Append(empty = CommonBorder(ex = i, ey = j));
 					else
-						children.Append(CreateWall(i, j));
+						children.Append(CommonBorder(i, j));
 		}
 		if (read_pos >= content.Size())
 		{
@@ -158,24 +148,25 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		}
 	}
 
-	void ReplayGame::ResetButton(Button const& button, uint8_t const& x, uint8_t const& y)
+	void ReplayGame::MoveRaw(uint8_t const& x, uint8_t const& y)
 	{
-		Grid::SetRow(button, x);
-		Grid::SetColumn(button, y);
-		buttons[x][y] = button;
+		const Button& button = buttons[x][y];
+		Grid::SetRow(button, ex);
+		Grid::SetColumn(button, ey);
+		buttons[ex][ey] = button;
+		ex = x, ey = y;
 	}
 
 	void ReplayGame::Move(uint8_t const& x, uint8_t const& y)
 	{
 		if (x == ex)
-		{
 			if (y < ey)
 			{
 				for (uint8_t i = y; i < ey; ++i)
 					if (!board.GetAt(x).GetAt(i))
 						return;
 				for (uint8_t i = ey; i-- > y;)
-					ResetButton(buttons[x][i], x, i + 1);
+					MoveRaw(x, i);
 			}
 			else
 			{
@@ -183,19 +174,16 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					if (!board.GetAt(x).GetAt(i))
 						return;
 				for (uint8_t i = ey; i++ < y;)
-					ResetButton(buttons[x][i], x, i - 1);
+					MoveRaw(x, i);
 			}
-			ey = y;
-		}
 		else if (y == ey)
-		{
 			if (x < ex)
 			{
 				for (uint8_t i = x; i < ex; ++i)
 					if (!board.GetAt(i).GetAt(y))
 						return;
 				for (uint8_t i = ex; i-- > x;)
-					ResetButton(buttons[i][y], i + 1, y);
+					MoveRaw(i, y);
 			}
 			else
 			{
@@ -203,10 +191,8 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					if (!board.GetAt(i).GetAt(y))
 						return;
 				for (uint8_t i = ex; i++ < x;)
-					ResetButton(buttons[i][y], i - 1, y);
+					MoveRaw(i, y);
 			}
-			ex = x;
-		}
 		Grid::SetRow(empty, ex);
 		Grid::SetColumn(empty, ey);
 	}
