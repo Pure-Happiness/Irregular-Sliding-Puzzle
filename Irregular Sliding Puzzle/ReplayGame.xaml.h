@@ -6,7 +6,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 {
 	struct ReplayGame : ReplayGameT<ReplayGame>
 	{
-		void Init(IVector<uint8_t> const& _content);
+		void Init(IVectorView<uint8_t> const& _content);
 		[[nodiscard]] DispatcherTimer Timer() const;
 
 		void Resume(IInspectable const&, RoutedEventArgs const&);
@@ -22,7 +22,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		uint32_t read_pos = 3;
 		IVector<IVector<bool>> board = single_threaded_vector<IVector<bool>>();
 		vector<vector<Button>> buttons;
-		IVector<uint8_t> content;
+		IVectorView<uint8_t> content;
 		DispatcherTimer timer;
 		stack<pair<uint8_t, uint8_t>> empties;
 		Border empty = nullptr;

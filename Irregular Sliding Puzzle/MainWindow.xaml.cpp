@@ -25,7 +25,8 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		alive.Frame().GoBack();
 		const auto page = alive.Frame().Content().as<DesignGame>();
 		page.Init(o_height, o_width, o_board);
-		page.Init(o_graph);
+		if (o_graph)
+			page.Init(o_graph);
 		title_bar.IsBackButtonVisible(false);
 	}
 }

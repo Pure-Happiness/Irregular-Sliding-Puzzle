@@ -4,7 +4,7 @@ namespace Irregular_Sliding_Puzzle
 	runtimeclass ReplayGame : Microsoft.UI.Xaml.Controls.Page
 	{
 		ReplayGame();
-		void Init(IVector<UInt8> content);
+		void Init(IVectorView<UInt8> content);
 		Microsoft.UI.Xaml.DispatcherTimer Timer{ get; };
 	}
 }

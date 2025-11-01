@@ -58,6 +58,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				auto const& [x, y] = pos[ex][ey][r() % pos[ex][ey].size()];
 				Move(x, y);
 			}
+			numbers[ex][ey] = 0;
 		}
 		record.push_back(0);
 		record.push_back(height);

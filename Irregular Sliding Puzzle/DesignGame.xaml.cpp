@@ -426,7 +426,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 							Frame().Navigate(xaml_typename<ReplayGame>());
 							o_height = height, o_width = width, o_board = board, o_graph = g;
 							title_bar.IsBackButtonVisible(true);
-							(alive = Frame().Content().as<ReplayGame>()).Init(content);
+							(alive = Frame().Content().as<ReplayGame>()).Init(content.GetView());
 						});
 					children.Append(button);
 				}
@@ -612,7 +612,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	SEllipse DesignGame::CreateVertex(IInspectable const& p)
 	{
 		const SEllipse ellipse = CommonEllipse(p);
-		ellipse.Fill(SolidColorBrush(Colors::SteelBlue()));
 		AllSkip(ellipse);
 		ellipse.RightTapped([this, p, ellipse](IInspectable const&, RightTappedRoutedEventArgs const&)
 			{
@@ -636,7 +635,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	SPolyline DesignGame::CreateEdge(IVector<Point> const& p, IInspectable const& u, IInspectable const& v)
 	{
 		const SPolyline pl = CommonLine(p, u, v);
-		pl.Stroke(SolidColorBrush(Colors::SteelBlue()));
 		AllSkip(pl);
 		pl.RightTapped([this, p, u, v, pl](IInspectable const&, RightTappedRoutedEventArgs const&)
 			{

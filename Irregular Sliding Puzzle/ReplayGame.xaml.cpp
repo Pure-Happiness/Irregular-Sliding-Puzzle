@@ -6,7 +6,7 @@
 
 namespace winrt::Irregular_Sliding_Puzzle::implementation
 {
-	void ReplayGame::Init(IVector<uint8_t> const& _content)
+	void ReplayGame::Init(IVectorView<uint8_t> const& _content)
 	{
 		height = (content = _content).GetAt(1);
 		width = content.GetAt(2);
