@@ -135,16 +135,16 @@
   <data name="Dark.Content" xml:space="preserve">
     <value>Dark</value>
   </data>
-  <data name="Gitee" xml:space="preserve">
+  <data name="Gitee.Content" xml:space="preserve">
     <value>User guide on Gitee.</value>
   </data>
-  <data name="Gitee Link" xml:space="preserve">
+  <data name="Gitee.NavigateUri" xml:space="preserve">
     <value>https://gitee.com/Pure-Happiness/Irregular-Sliding-Puzzle/blob/master/README.md</value>
   </data>
-  <data name="GitHub" xml:space="preserve">
+  <data name="GitHub.Content" xml:space="preserve">
     <value>User guide on GitHub.</value>
   </data>
-  <data name="GitHub Link" xml:space="preserve">
+  <data name="GitHub.NavigateUri" xml:space="preserve">
     <value>https://github.com/Pure-Happiness/Irregular-Sliding-Puzzle/blob/master/README.md</value>
   </data>
   <data name="GraphMode.Label" xml:space="preserve">

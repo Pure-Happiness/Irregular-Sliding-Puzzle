@@ -141,6 +141,10 @@
       <DependentUpon>Graph.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="Help.xaml.h">
+      <DependentUpon>Help.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h">
       <DependentUpon>App.xaml</DependentUpon>
@@ -170,6 +174,9 @@
     <Page Include="DesignGame.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Help.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml" />
     <Page Include="PlayGame.xaml">
       <SubType>Designer</SubType>
@@ -191,6 +198,10 @@
     </ClCompile>
     <ClCompile Include="Graph.cpp">
       <DependentUpon>Graph.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="Help.xaml.cpp">
+      <DependentUpon>Help.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="pch.cpp">
@@ -227,6 +238,10 @@
     </Midl>
     <Midl Include="Graph.idl">
       <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="Help.idl">
+      <DependentUpon>Help.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Midl>
     <Midl Include="MainWindow.idl">
       <SubType>Code</SubType>

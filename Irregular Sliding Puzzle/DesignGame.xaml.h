@@ -6,10 +6,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 {
 	struct DesignGame : DesignGameT<DesignGame>
 	{
-		void Init();
-		void Init(uint8_t const& _height, uint8_t const& _width, IVector<IVector<bool>> const& _board);
-		void Init(GraphP const& _g);
-		void AsGraphMode();
+		void Init(uint8_t const& _height, uint8_t const& _width, IVector<IVector<bool>> const& _board, GraphP const& _g, bool const& _mode);
 
 		void DragStart(IInspectable const&, PointerRoutedEventArgs const& e);
 		void DragEnd(IInspectable const&, PointerRoutedEventArgs const& e);
@@ -25,7 +22,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		void AsErase(IInspectable const&, TappedRoutedEventArgs const&);
 		void AddCurves(IInspectable const&, TappedRoutedEventArgs const&);
 		void Set(IInspectable const&, RoutedEventArgs const&) const;
-		void Help(IInspectable const&, RoutedEventArgs const&) const;
+		void ShowHelp(IInspectable const&, RoutedEventArgs const&) const;
 		void StartGame(IInspectable const&, RoutedEventArgs const&) const;
 		fire_and_forget DisplayRecords(IInspectable const&, RoutedEventArgs const&);
 
@@ -42,6 +39,10 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		map<IInspectable, SEllipse> vertices;
 		map<IInspectable, SPolyline> edges;
 
+		void SetGrid(uint8_t const& _height, uint8_t const& _width, IVector<IVector<bool>> const& _board);
+		void ClearGrid();
+		void SetGraph(GraphP const& _g);
+		void ClearGraph();
 		static void AllSkip(UIElement const& element);
 		static FontIcon RemoveIcon();
 		static FontIcon AddIcon();

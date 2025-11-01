@@ -151,7 +151,7 @@
 		            VerticalAlignment="Center"
 		            Icon="Help"
 		            x:Uid="Help"
-		            Click="Help"/>
+		            Click="ShowHelp"/>
                 <AppBarButton
 		            Grid.Column="6"
 		            VerticalAlignment="Center"

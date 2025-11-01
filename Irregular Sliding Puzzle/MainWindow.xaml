@@ -21,6 +21,6 @@
 			x:Name="title"
 			x:Uid="TitleBar"
             BackRequested="ReturnToDesign"/>
-        <Frame x:Name="root" Grid.Row="1"/>
+        <Border x:Name="root" Grid.Row="1"/>
     </Grid>
 </Window>

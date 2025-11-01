@@ -6,17 +6,14 @@
 
 namespace winrt::Irregular_Sliding_Puzzle::implementation
 {
-	void PlayGame::Init(uint8_t const& _height, uint8_t const& _width, IVector<IVector<bool>> const& _board)
+	bool PlayGame::Init(uint8_t const& _height, uint8_t const& _width, IVector<IVector<bool>> const& _board)
 	{
 		height = _height, width = _width, board = _board;
 		numbers.assign(height, vector<uint16_t>(width));
 		buttons.assign(height, vector<Button>(width, nullptr));
 		CreateBackground(baby(), height, width, board, num);
 		if (!num)
-		{
-			GoBack();
-			return;
-		}
+			return false;
 		CreateTarget(target(), height, width, board, num);
 		{
 			const UIElementCollection children = baby().Children();
@@ -47,10 +44,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 						for (uint8_t k = i; k-- && board.GetAt(k).GetAt(j);)
 							pairs.emplace_back(k, j);
 						if (pairs.empty())
-						{
-							GoBack();
-							return;
-						}
+							return false;
 					}
 			mt19937 r(static_cast<unsigned>(chrono::system_clock::now().time_since_epoch().count()) ^ random_device()());
 			for (uint32_t i{}; i < 0x10000; ++i)
@@ -82,6 +76,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		SetTimer(timer, time, Timer());
 		timer.Start();
 		start_time = chrono::steady_clock::now();
+		return true;
 	}
 
 	void PlayGame::Pause(IInspectable const&, RoutedEventArgs const&)
@@ -109,11 +104,9 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	void PlayGame::GoBack() const
 	{
-		Frame().GoBack();
-		const auto content = Frame().Content().as<DesignGame>();
-		content.Init(height, width, board);
-		if (o_graph)
-			content.Init(o_graph);
+		const DesignGame content;
+		content.Init(height, width, board, o_graph, false);
+		container.Child(content);
 	}
 
 	Button PlayGame::CreateButton(uint8_t const& x, uint8_t const& y, uint16_t const& n)

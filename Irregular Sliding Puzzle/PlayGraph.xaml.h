@@ -6,7 +6,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 {
 	struct PlayGraph : PlayGraphT<PlayGraph>
 	{
-		void Init(GraphP const& _g);
+		bool Init(GraphP const& _g);
 
 		void Pause(IInspectable const&, RoutedEventArgs const&);
 		void Resume(IInspectable const&, RoutedEventArgs const&);

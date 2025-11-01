@@ -4,6 +4,6 @@ namespace Irregular_Sliding_Puzzle
     runtimeclass PlayGame : Microsoft.UI.Xaml.Controls.Page
     {
         PlayGame();
-        void Init(UInt8 height, UInt8 width, IVector< IVector<Boolean> > board);
+        Boolean Init(UInt8 height, UInt8 width, IVector< IVector<Boolean> > board);
     }
 }

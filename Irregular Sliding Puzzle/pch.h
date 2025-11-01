@@ -71,11 +71,13 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	using SPolyline = Polyline;
 	using GraphP = Graph;
 
+	inline Border container = nullptr;
 	inline TitleBar title_bar = nullptr;
 	inline ReplayGame alive = nullptr;
 	inline uint8_t o_height, o_width;
 	inline IVector<IVector<bool>> o_board;
 	inline GraphP o_graph = nullptr;
+	inline bool o_mode;
 
 	inline Brush AccentFill()
 	{

@@ -6,15 +6,12 @@
 
 namespace winrt::Irregular_Sliding_Puzzle::implementation
 {
-	void PlayGraph::Init(GraphP const& _g)
+	bool PlayGraph::Init(GraphP const& _g)
 	{
 		g = _g;
 		CreateBackground(board(), g, num);
 		if (!num)
-		{
-			GoBack();
-			return;
-		}
+			return false;
 		CreateTarget(target(), g, num);
 		{
 			uint16_t now = 1;
@@ -41,19 +38,18 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					});
 				return !mpv.empty();
 			}))
-		{
-			GoBack();
-			return;
-		}
+			return false;
 		mt19937 r(static_cast<unsigned>(chrono::system_clock::now().time_since_epoch().count()) ^ random_device()());
 		for (uint32_t i{}; i < 0x10000; ++i)
 		{
 			vector<IInspectable> const& mpe = mp.at(empty);
 			MoveRaw(mpe[r() % mpe.size()]);
 		}
+		numbers[empty] = 0;
 		SetTimer(timer, time, Timer());
 		timer.Start();
 		start_time = chrono::steady_clock::now();
+		return true;
 	}
 
 	void PlayGraph::Pause(IInspectable const&, RoutedEventArgs const&)
@@ -80,11 +76,9 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	void PlayGraph::GoBack() const
 	{
-		Frame().GoBack();
-		const auto content = Frame().Content().as<DesignGame>();
-		content.Init(g);
-		content.Init(o_height, o_width, o_board);
-		content.AsGraphMode();
+		const DesignGame content;
+		content.Init(o_height, o_width, o_board, g, true);
+		container.Child(content);
 	}
 
 	Button PlayGraph::CreateButton(IInspectable const& p, uint16_t const& n)

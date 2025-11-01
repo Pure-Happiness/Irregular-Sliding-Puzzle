@@ -20,6 +20,9 @@
     <Page Include="PlayGraph.xaml">
       <Filter>Pages</Filter>
     </Page>
+    <Page Include="Help.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />

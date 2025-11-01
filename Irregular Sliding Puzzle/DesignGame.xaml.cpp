@@ -6,79 +6,12 @@
 
 namespace winrt::Irregular_Sliding_Puzzle::implementation
 {
-	void DesignGame::Init()
+	void DesignGame::Init(uint8_t const& _height, uint8_t const& _width, IVector<IVector<bool>> const& _board, Graph const& _g, bool const& _mode)
 	{
-		{
-			const UIElementCollection mum = mother().Children();
-			for (uint8_t i{}; i < 16; ++i)
-				mum.Append(CreateRemoveRow(i));
-			mum.Append(CreateAddRow());
-		}
-		{
-			const UIElementCollection dad = father().Children();
-			for (uint8_t i{}; i < 16; ++i)
-				dad.Append(CreateRemoveColumn(i));
-			dad.Append(CreateAddColumn());
-		}
-		RowsColumns(baby(), 16, 16);
-		board = single_threaded_vector<IVector<bool>>();
-		const UIElementCollection children = baby().Children();
-		cells.assign(16, vector<Border>(16, nullptr));
-		for (uint8_t i{}; i < 16; ++i)
-		{
-			const IVector current = single_threaded_vector<bool>();
-			board.Append(current);
-			for (uint8_t j{}; j < 16; ++j)
-			{
-				children.Append(CreateCell(i, j));
-				current.Append(false);
-			}
-		}
-	}
-
-	void DesignGame::Init(uint8_t const& _height, uint8_t const& _width, IVector<IVector<bool>> const& _board)
-	{
-		height = _height, width = _width, board = _board;
-		{
-			const UIElementCollection mum = mother().Children();
-			mum.Clear();
-			for (uint8_t i{}; i < height; ++i)
-				mum.Append(CreateRemoveRow(i));
-			mum.Append(CreateAddRow());
-		}
-		{
-			const UIElementCollection dad = father().Children();
-			dad.Clear();
-			for (uint8_t i{}; i < width; ++i)
-				dad.Append(CreateRemoveColumn(i));
-			dad.Append(CreateAddColumn());
-		}
-		RowsColumns(baby(), height, width);
-		const UIElementCollection children = baby().Children();
-		children.Clear();
-		cells.assign(height, vector<Border>(width, nullptr));
-		for (uint8_t i{}; i < height; ++i)
-			for (uint8_t j{}; j < width; ++j)
-				children.Append(CreateCell(i, j, board.GetAt(i).GetAt(j)));
-	}
-
-	void DesignGame::Init(GraphP const& _g)
-	{
-		g = _g;
-		const UIElementCollection collection = draw().Children();
-		g.ForEachVertex([this, &collection](IInspectable const& v)
-			{
-				collection.Append(CreateVertex(v));
-			});
-		g.ForEachEdge([this, &collection](IInspectable const& e, IInspectable const& u, IInspectable const& v)
-			{
-				collection.Append(CreateEdge(e.as<IVector<Point>>(), u, v));
-			});
-	}
-
-	void DesignGame::AsGraphMode()
-	{
-		ToGraphMode(nullptr, nullptr);
+		SetGrid(_height, _width, _board);
+		SetGraph(_g);
+		if (_mode)
+			ToGraphMode(nullptr, nullptr);
 	}
 
 	void DesignGame::DragStart(IInspectable const&, PointerRoutedEventArgs const& e)
@@ -199,8 +132,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	void DesignGame::ToGraphMode(IInspectable const&, RoutedEventArgs const&)
 	{
-		if (g == nullptr)
-			g = Graph();
 		is_graph = true;
 		gridBoard().Visibility(Visibility::Collapsed);
 		graphBoard().Visibility(Visibility::Visible);
@@ -216,8 +147,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	void DesignGame::ToGridMode(IInspectable const&, RoutedEventArgs const&)
 	{
-		if (board == nullptr)
-			Init();
 		is_graph = false;
 		gridBoard().Visibility(Visibility::Visible);
 		graphBoard().Visibility(Visibility::Collapsed);
@@ -290,28 +219,12 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		dialog.ShowAsync();
 	}
 
-	void DesignGame::Help(IInspectable const&, RoutedEventArgs const&) const
+	void DesignGame::ShowHelp(IInspectable const&, RoutedEventArgs const&) const
 	{
 		const ContentDialog dialog;
 		dialog.XamlRoot(XamlRoot());
 		dialog.Title(box_value(ResourceLoader().GetString(L"用户指南")));
-		{
-			const StackPanel panel;
-			const UIElementCollection collection = panel.Children();
-			{
-				const HyperlinkButton block;
-				block.Content(box_value(ResourceLoader().GetString(L"GitHub")));
-				block.NavigateUri(Uri(ResourceLoader().GetString(L"GitHub Link")));
-				collection.Append(block);
-			}
-			{
-				const HyperlinkButton block;
-				block.Content(box_value(ResourceLoader().GetString(L"Gitee")));
-				block.NavigateUri(Uri(ResourceLoader().GetString(L"Gitee Link")));
-				collection.Append(block);
-			}
-			dialog.Content(panel);
-		}
+		dialog.Content(Help());
 		dialog.CloseButtonText(ResourceLoader().GetString(L"Back"));
 		dialog.DefaultButton(ContentDialogButton::Close);
 		dialog.ShowAsync();
@@ -321,15 +234,19 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	{
 		if (is_graph)
 		{
-			o_height = height, o_width = width, o_board = board;
-			Frame().Navigate(xaml_typename<PlayGraph>());
-			Frame().Content().as<PlayGraph>().Init(g);
+			if (const PlayGraph content; content.Init(g))
+			{
+				o_height = height, o_width = width, o_board = board;
+				container.Child(content);
+			}
 		}
 		else
 		{
-			o_graph = g;
-			Frame().Navigate(xaml_typename<PlayGame>());
-			Frame().Content().as<PlayGame>().Init(height, width, board);
+			if (const PlayGame content; content.Init(height, width, board))
+			{
+				o_graph = g;
+				container.Child(content);
+			}
 		}
 	}
 
@@ -403,7 +320,8 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 										current.Append(*pt);
 								}
 							}
-							Init(height, width, board);
+							ClearGrid();
+							SetGrid(height, width, board);
 						});
 					children.Append(button);
 				}
@@ -423,10 +341,11 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 							const IVector content = single_threaded_vector<uint8_t>();
 							for (uint8_t* data = buffer.data(), *end = data + buffer.Length(); data < end; ++data)
 								content.Append(*data);
-							Frame().Navigate(xaml_typename<ReplayGame>());
-							o_height = height, o_width = width, o_board = board, o_graph = g;
+							o_height = height, o_width = width, o_board = board, o_graph = g, o_mode = false;
+							alive = ReplayGame();
+							alive.Init(content.GetView());
+							container.Child(alive);
 							title_bar.IsBackButtonVisible(true);
-							(alive = Frame().Content().as<ReplayGame>()).Init(content.GetView());
 						});
 					children.Append(button);
 				}
@@ -439,6 +358,57 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				st.pop();
 			}
 		}
+	}
+
+	void DesignGame::SetGrid(uint8_t const& _height, uint8_t const& _width, IVector<IVector<bool>> const& _board)
+	{
+		height = _height, width = _width, board = _board;
+		{
+			const UIElementCollection mum = mother().Children();
+			for (uint8_t i{}; i < height; ++i)
+				mum.Append(CreateRemoveRow(i));
+			mum.Append(CreateAddRow());
+		}
+		{
+			const UIElementCollection dad = father().Children();
+			for (uint8_t i{}; i < width; ++i)
+				dad.Append(CreateRemoveColumn(i));
+			dad.Append(CreateAddColumn());
+		}
+		RowsColumns(baby(), height, width);
+		const UIElementCollection children = baby().Children();
+		cells.assign(height, vector<Border>(width, nullptr));
+		for (uint8_t i{}; i < height; ++i)
+			for (uint8_t j{}; j < width; ++j)
+				children.Append(CreateCell(i, j, board.GetAt(i).GetAt(j)));
+	}
+
+	void DesignGame::ClearGrid()
+	{
+		mother().Children().Clear();
+		father().Children().Clear();
+		baby().RowDefinitions().Clear();
+		baby().ColumnDefinitions().Clear();
+		baby().Children().Clear();
+	}
+
+	void DesignGame::SetGraph(Graph const& _g)
+	{
+		g = _g;
+		const UIElementCollection children = draw().Children();
+		g.ForEachVertex([this, &children](IInspectable const& v)
+			{
+				children.Append(CreateVertex(v));
+			});
+		g.ForEachEdge([this, &children](IInspectable const& e, IInspectable const& u, IInspectable const& v)
+			{
+				children.Append(CreateEdge(e.as<IVector<Point>>(), u, v));
+			});
+	}
+
+	void DesignGame::ClearGraph()
+	{
+		draw().Children().Clear();
 	}
 
 	void DesignGame::AllSkip(UIElement const& element)
