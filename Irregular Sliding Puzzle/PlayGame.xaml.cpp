@@ -24,9 +24,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 						if (now < num)
 							children.Append(CreateButton(i, j, numbers[i][j] = now++));
 						else
-							children.Append(empty = CommonBorder(ex = i, ey = j));
-					else
-						children.Append(CommonBorder(i, j));
+							ex = i, ey = j;
 		}
 		{
 			vector pos(height, vector<vector<pair<uint8_t, uint8_t>>>(width));
@@ -50,7 +48,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 			for (uint32_t i{}; i < 0x10000; ++i)
 			{
 				auto const& [x, y] = pos[ex][ey][r() % pos[ex][ey].size()];
-				Move(x, y);
+				CommonMove(x, y, ex, ey, board, mem_fn(&PlayGame::MoveRaw), this);
 			}
 			numbers[ex][ey] = 0;
 		}
@@ -125,26 +123,18 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					const uint8_t row = Grid::GetRow(button), column = Grid::GetColumn(button);
 					record.push_back(row);
 					record.push_back(column);
-					Move(row, column);
+					CommonMove(row, column, ex, ey, board, mem_fn(&PlayGame::MoveRaw), this);
 				}
-				if (Complete())
-				{
-					timer.Stop();
-					record.front() = 1;
-					WriteRecord();
-					const ContentDialog dialog;
-					dialog.Title(box_value(ResourceLoader().GetString(L"Congratulations")));
-					const uint32_t minutes = time / 60, seconds = time - minutes * 60;
-					dialog.Content(box_value(ResourceLoader().GetString(L"Time") + (minutes < 10 ? L"0" : L"") + to_hstring(minutes) + L":" + (seconds < 10 ? L"0" : L"") + to_hstring(seconds)));
-					dialog.CloseButtonText(ResourceLoader().GetString(L"Back"));
-					dialog.CloseButtonClick([this](ContentDialog const&, ContentDialogButtonClickEventArgs const&)
-						{
-							GoBack();
-						});
-					dialog.DefaultButton(ContentDialogButton::Close);
-					dialog.XamlRoot(XamlRoot());
-					dialog.ShowAsync();
-				}
+				uint16_t now = 1;
+				for (uint8_t i{}; i < height; ++i)
+					for (uint8_t j{}; j < width; ++j)
+						if (board.GetAt(i).GetAt(j) && now < num && numbers[i][j] != now++)
+							goto fail;
+				timer.Stop();
+				record.front() = 1;
+				WriteRecord();
+				Congratulations(time, XamlRoot(), mem_fn(&PlayGame::GoBack), this);
+			fail:;
 			});
 		return buttons[x][y] = button;
 	}
@@ -157,56 +147,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		buttons[ex][ey] = button;
 		numbers[ex][ey] = numbers[x][y];
 		ex = x, ey = y;
-	}
-
-	bool PlayGame::Complete() const
-	{
-		uint16_t now = 1;
-		for (uint8_t i{}; i < height; ++i)
-			for (uint8_t j{}; j < width; ++j)
-				if (board.GetAt(i).GetAt(j) && now < num && numbers[i][j] != now++)
-					return false;
-		return true;
-	}
-
-	void PlayGame::Move(uint8_t const& x, uint8_t const& y)
-	{
-		if (x == ex)
-			if (y < ey)
-			{
-				for (uint8_t i = y; i < ey; ++i)
-					if (!board.GetAt(x).GetAt(i))
-						return;
-				for (uint8_t i = ey; i-- > y;)
-					MoveRaw(x, i);
-			}
-			else
-			{
-				for (uint8_t i = y; i > ey; --i)
-					if (!board.GetAt(x).GetAt(i))
-						return;
-				for (uint8_t i = ey; i++ < y;)
-					MoveRaw(x, i);
-			}
-		else if (y == ey)
-			if (x < ex)
-			{
-				for (uint8_t i = x; i < ex; ++i)
-					if (!board.GetAt(i).GetAt(y))
-						return;
-				for (uint8_t i = ex; i-- > x;)
-					MoveRaw(i, y);
-			}
-			else
-			{
-				for (uint8_t i = x; i > ex; --i)
-					if (!board.GetAt(i).GetAt(y))
-						return;
-				for (uint8_t i = ex; i++ < x;)
-					MoveRaw(i, y);
-			}
-		Grid::SetRow(empty, ex);
-		Grid::SetColumn(empty, ey);
 	}
 
 	fire_and_forget PlayGame::WriteRecord() const

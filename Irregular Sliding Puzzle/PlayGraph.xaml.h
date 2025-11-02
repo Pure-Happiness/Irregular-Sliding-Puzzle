@@ -27,8 +27,8 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		void GoBack() const;
 		Button CreateButton(IInspectable const& p, uint16_t const& n);
 		SPolyline CreateEdge(IVector<Point> const& p, IInspectable const& u, IInspectable const& v);
+		void CheckComplete();
 		void MoveRaw(IInspectable const& v);
-		[[nodiscard]] bool Complete() const;
 		void Move(IInspectable const& u, IInspectable const& v);
 		void Move(IInspectable const& p);
 	};

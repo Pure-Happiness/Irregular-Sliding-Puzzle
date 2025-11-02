@@ -96,22 +96,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		button.Click([this, button](IInspectable const&, RoutedEventArgs const&)
 			{
 				Move(rev.at(button));
-				if (Complete())
-				{
-					timer.Stop();
-					const ContentDialog dialog;
-					dialog.Title(box_value(ResourceLoader().GetString(L"Congratulations")));
-					const uint32_t minutes = time / 60, seconds = time - minutes * 60;
-					dialog.Content(box_value(ResourceLoader().GetString(L"Time") + (minutes < 10 ? L"0" : L"") + to_hstring(minutes) + L":" + (seconds < 10 ? L"0" : L"") + to_hstring(seconds)));
-					dialog.CloseButtonText(ResourceLoader().GetString(L"Back"));
-					dialog.CloseButtonClick([this](ContentDialog const&, ContentDialogButtonClickEventArgs const&)
-						{
-							GoBack();
-						});
-					dialog.DefaultButton(ContentDialogButton::Close);
-					dialog.XamlRoot(XamlRoot());
-					dialog.ShowAsync();
-				}
+				CheckComplete();
 			});
 		return buttons[rev[button] = p] = button;
 	}
@@ -122,24 +107,21 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		pl.Tapped([this, u, v](IInspectable const&, TappedRoutedEventArgs const&)
 			{
 				Move(u, v);
-				if (Complete())
-				{
-					timer.Stop();
-					const ContentDialog dialog;
-					dialog.Title(box_value(ResourceLoader().GetString(L"Congratulations")));
-					const uint32_t minutes = time / 60, seconds = time - minutes * 60;
-					dialog.Content(box_value(ResourceLoader().GetString(L"Time") + (minutes < 10 ? L"0" : L"") + to_hstring(minutes) + L":" + (seconds < 10 ? L"0" : L"") + to_hstring(seconds)));
-					dialog.CloseButtonText(ResourceLoader().GetString(L"Back"));
-					dialog.CloseButtonClick([this](ContentDialog const&, ContentDialogButtonClickEventArgs const&)
-						{
-							GoBack();
-						});
-					dialog.DefaultButton(ContentDialogButton::Close);
-					dialog.XamlRoot(XamlRoot());
-					dialog.ShowAsync();
-				}
+				CheckComplete();
 			});
 		return pl;
+	}
+
+	void PlayGraph::CheckComplete()
+	{
+		if (uint16_t now = 1; g.ForEachVertex2([&now, this](IInspectable const& v)
+			{
+				return now >= num || numbers.at(v) == now++;
+			}))
+		{
+			timer.Stop();
+			Congratulations(time, XamlRoot(), mem_fn(&PlayGraph::GoBack), this);
+		}
 	}
 
 	void PlayGraph::MoveRaw(IInspectable const& v)
@@ -151,15 +133,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		buttons[empty] = button;
 		numbers[empty] = numbers.at(v);
 		swap(rev.at(button), empty);
-	}
-
-	bool PlayGraph::Complete() const
-	{
-		uint16_t now = 1;
-		return g.ForEachVertex2([&now, this](IInspectable const& v)
-			{
-				return now >= num || numbers.at(v) == now++;
-			});
 	}
 
 	void PlayGraph::Move(IInspectable const& u, IInspectable const& v)

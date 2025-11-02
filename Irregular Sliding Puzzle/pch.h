@@ -3,6 +3,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <chrono>
+#include <functional>
 #include <map>
 #include <random>
 #include <ranges>
@@ -123,24 +124,21 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		return column;
 	}
 
-	inline Border CommonBorder(uint8_t const& x, uint8_t const& y)
+	template<typename T> static T Common(uint8_t const& x, uint8_t const& y)
 	{
-		const Border border;
-		Grid::SetRow(border, x);
-		Grid::SetColumn(border, y);
-		border.Height(32);
-		border.Width(32);
-		return border;
+		const T element;
+		Grid::SetRow(element, x);
+		Grid::SetColumn(element, y);
+		element.Height(32);
+		element.Width(32);
+		return element;
 	}
+
+	constexpr Border(*CommonBorder)(unsigned char const&, unsigned char const&) = Common<Border>;
 
 	inline Button CommonButton(uint8_t const& x, uint8_t const& y, uint16_t const& val)
 	{
-		const Button button;
-		Grid::SetRow(button, x);
-		Grid::SetColumn(button, y);
-		button.Height(32);
-		button.Width(32);
-		button.Padding({});
+		const Button button = Common<Button>(x, y);
 		button.Content(box_value(to_hstring(val)));
 		return button;
 	}
@@ -286,5 +284,59 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				const uint32_t minutes = time / 60, seconds = time - minutes * 60;
 				button.Label((minutes < 10 ? L"0" : L"") + to_hstring(minutes) + L":" + (seconds < 10 ? L"0" : L"") + to_hstring(seconds));
 			});
+	}
+
+	void Congratulations(uint32_t const& time, XamlRoot const& root, auto&& back, auto&& th)
+	{
+		const ContentDialog dialog;
+		dialog.Title(box_value(ResourceLoader().GetString(L"Congratulations")));
+		const uint32_t minutes = time / 60, seconds = time - minutes * 60;
+		dialog.Content(box_value(ResourceLoader().GetString(L"Time") + (minutes < 10 ? L"0" : L"") + to_hstring(minutes) + L":" + (seconds < 10 ? L"0" : L"") + to_hstring(seconds)));
+		dialog.CloseButtonText(ResourceLoader().GetString(L"Back"));
+		dialog.CloseButtonClick([=](ContentDialog const&, ContentDialogButtonClickEventArgs const&)
+			{
+				back(th);
+			});
+		dialog.DefaultButton(ContentDialogButton::Close);
+		dialog.XamlRoot(root);
+		dialog.ShowAsync();
+	}
+
+	void CommonMove(uint8_t const& x, uint8_t const& y, uint8_t const& ex, uint8_t const& ey, IVector<IVector<bool>> const& board, auto&& raw, auto&& th)
+	{
+		if (x == ex)
+			if (y < ey)
+			{
+				for (uint8_t i = y; i < ey; ++i)
+					if (!board.GetAt(x).GetAt(i))
+						return;
+				for (uint8_t i = ey; i-- > y;)
+					raw(th, x, i);
+			}
+			else
+			{
+				for (uint8_t i = y; i > ey; --i)
+					if (!board.GetAt(x).GetAt(i))
+						return;
+				for (uint8_t i = ey; i++ < y;)
+					raw(th, x, i);
+			}
+		else if (y == ey)
+			if (x < ex)
+			{
+				for (uint8_t i = x; i < ex; ++i)
+					if (!board.GetAt(i).GetAt(y))
+						return;
+				for (uint8_t i = ex; i-- > x;)
+					raw(th, i, y);
+			}
+			else
+			{
+				for (uint8_t i = x; i > ex; --i)
+					if (!board.GetAt(i).GetAt(y))
+						return;
+				for (uint8_t i = ex; i++ < x;)
+					raw(th, i, y);
+			}
 	}
 }

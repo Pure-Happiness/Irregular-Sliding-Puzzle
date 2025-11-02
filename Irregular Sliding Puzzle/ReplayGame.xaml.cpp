@@ -45,9 +45,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 						if (const uint16_t& val = content.GetAt(read_pos++) | content.GetAt(read_pos++) << 8)
 							children.Append(buttons[i][j] = CommonButton(i, j, val));
 						else
-							children.Append(empty = CommonBorder(ex = i, ey = j));
-					else
-						children.Append(CommonBorder(i, j));
+							ex = i, ey = j;
 		}
 		if (read_pos >= content.Size())
 		{
@@ -59,7 +57,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				empties.emplace(ex, ey);
 				const uint32_t current = content.GetAt(read_pos++) | content.GetAt(read_pos++) << 8 | content.GetAt(read_pos++) << 16 | content.GetAt(read_pos++) << 24;
 				const uint8_t x = content.GetAt(read_pos++), y = content.GetAt(read_pos++);
-				Move(x, y);
+				CommonMove(x, y, ex, ey, board, mem_fn(&ReplayGame::MoveRaw), this);
 				if (read_pos >= content.Size())
 				{
 					Pause(nullptr, nullptr);
@@ -99,7 +97,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		auto [x, y] = empties.top();
 		empties.pop();
 		read_pos -= 6;
-		Move(x, y);
+		CommonMove(x, y, ex, ey, board, mem_fn(&ReplayGame::MoveRaw), this);
 		if (empties.empty())
 			previous().IsEnabled(false);
 		resume().IsEnabled(true);
@@ -111,7 +109,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		empties.emplace(ex, ey);
 		const uint32_t current = content.GetAt(read_pos++) | content.GetAt(read_pos++) << 8 | content.GetAt(read_pos++) << 16 | content.GetAt(read_pos++) << 24;
 		const uint8_t x = content.GetAt(read_pos++), y = content.GetAt(read_pos++);
-		Move(x, y);
+		CommonMove(x, y, ex, ey, board, mem_fn(&ReplayGame::MoveRaw), this);
 		if (read_pos >= content.Size())
 		{
 			resume().IsEnabled(false);
@@ -155,45 +153,5 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		Grid::SetColumn(button, ey);
 		buttons[ex][ey] = button;
 		ex = x, ey = y;
-	}
-
-	void ReplayGame::Move(uint8_t const& x, uint8_t const& y)
-	{
-		if (x == ex)
-			if (y < ey)
-			{
-				for (uint8_t i = y; i < ey; ++i)
-					if (!board.GetAt(x).GetAt(i))
-						return;
-				for (uint8_t i = ey; i-- > y;)
-					MoveRaw(x, i);
-			}
-			else
-			{
-				for (uint8_t i = y; i > ey; --i)
-					if (!board.GetAt(x).GetAt(i))
-						return;
-				for (uint8_t i = ey; i++ < y;)
-					MoveRaw(x, i);
-			}
-		else if (y == ey)
-			if (x < ex)
-			{
-				for (uint8_t i = x; i < ex; ++i)
-					if (!board.GetAt(i).GetAt(y))
-						return;
-				for (uint8_t i = ex; i-- > x;)
-					MoveRaw(i, y);
-			}
-			else
-			{
-				for (uint8_t i = x; i > ex; --i)
-					if (!board.GetAt(i).GetAt(y))
-						return;
-				for (uint8_t i = ex; i++ < x;)
-					MoveRaw(i, y);
-			}
-		Grid::SetRow(empty, ex);
-		Grid::SetColumn(empty, ey);
 	}
 }
