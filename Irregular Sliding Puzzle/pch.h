@@ -3,7 +3,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <chrono>
-#include <functional>
 #include <map>
 #include <random>
 #include <ranges>
@@ -77,7 +76,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	inline ReplayGame alive = nullptr;
 	inline uint8_t o_height, o_width;
 	inline IVector<IVector<bool>> o_board;
-	inline GraphP o_graph = nullptr;
+	inline Graph o_graph = nullptr;
 	inline bool o_mode;
 
 	inline Brush AccentFill()
@@ -228,7 +227,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					children.Append(CommonBorder(i, j));
 	}
 
-	inline void CreateBackground(Canvas const& canvas, GraphP const& graph, uint16_t& num)
+	inline void CreateBackground(Canvas const& canvas, Graph const& graph, uint16_t& num)
 	{
 		num = graph.VertexCount();
 		const UIElementCollection children = canvas.Children();
@@ -238,7 +237,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 			});
 	}
 
-	inline void CreateTarget(Canvas const& canvas, GraphP const& graph, uint16_t const& num)
+	inline void CreateTarget(Canvas const& canvas, Graph const& graph, uint16_t const& num)
 	{
 		const UIElementCollection children = canvas.Children();
 		uint16_t now = 1;
@@ -286,23 +285,39 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 			});
 	}
 
-	void Congratulations(uint32_t const& time, XamlRoot const& root, auto&& back, auto&& th)
+	void CommonPause(DispatcherTimer const& timer, AppBarButton const& pause, AppBarButton const& resume, auto&& board)
+	{
+		timer.Stop();
+		pause.Visibility(Visibility::Collapsed);
+		resume.Visibility(Visibility::Visible);
+		board.Visibility(Visibility::Collapsed);
+	}
+
+	void CommonResume(DispatcherTimer const& timer, AppBarButton const& pause, AppBarButton const& resume, auto&& board)
+	{
+		pause.Visibility(Visibility::Visible);
+		resume.Visibility(Visibility::Collapsed);
+		board.Visibility(Visibility::Visible);
+		timer.Start();
+	}
+
+	void Congratulations(uint32_t const& time, XamlRoot const& root, auto&& th)
 	{
 		const ContentDialog dialog;
 		dialog.Title(box_value(ResourceLoader().GetString(L"Congratulations")));
 		const uint32_t minutes = time / 60, seconds = time - minutes * 60;
 		dialog.Content(box_value(ResourceLoader().GetString(L"Time") + (minutes < 10 ? L"0" : L"") + to_hstring(minutes) + L":" + (seconds < 10 ? L"0" : L"") + to_hstring(seconds)));
 		dialog.CloseButtonText(ResourceLoader().GetString(L"Back"));
-		dialog.CloseButtonClick([=](ContentDialog const&, ContentDialogButtonClickEventArgs const&)
+		dialog.CloseButtonClick([th](ContentDialog const&, ContentDialogButtonClickEventArgs const&)
 			{
-				back(th);
+				th->GoBack();
 			});
 		dialog.DefaultButton(ContentDialogButton::Close);
 		dialog.XamlRoot(root);
 		dialog.ShowAsync();
 	}
 
-	void CommonMove(uint8_t const& x, uint8_t const& y, uint8_t const& ex, uint8_t const& ey, IVector<IVector<bool>> const& board, auto&& raw, auto&& th)
+	void CommonMove(uint8_t const& x, uint8_t const& y, uint8_t const& ex, uint8_t const& ey, IVector<IVector<bool>> const& board, auto&& th)
 	{
 		if (x == ex)
 			if (y < ey)
@@ -311,7 +326,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					if (!board.GetAt(x).GetAt(i))
 						return;
 				for (uint8_t i = ey; i-- > y;)
-					raw(th, x, i);
+					th->MoveRaw(x, i);
 			}
 			else
 			{
@@ -319,7 +334,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					if (!board.GetAt(x).GetAt(i))
 						return;
 				for (uint8_t i = ey; i++ < y;)
-					raw(th, x, i);
+					th->MoveRaw(x, i);
 			}
 		else if (y == ey)
 			if (x < ex)
@@ -328,7 +343,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					if (!board.GetAt(i).GetAt(y))
 						return;
 				for (uint8_t i = ex; i-- > x;)
-					raw(th, i, y);
+					th->MoveRaw(i, y);
 			}
 			else
 			{
@@ -336,7 +351,28 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					if (!board.GetAt(i).GetAt(y))
 						return;
 				for (uint8_t i = ex; i++ < x;)
-					raw(th, i, y);
+					th->MoveRaw(i, y);
 			}
+	}
+
+	void CommonMove(IInspectable const& u, IInspectable const& v, IInspectable const& empty, auto&& th)
+	{
+		if (u == empty)
+			th->MoveRaw(v);
+		else if (v == empty)
+			th->MoveRaw(u);
+	}
+
+	void CommonMove(IInspectable const& p, Graph const& g, IInspectable const& empty, auto&& th)
+	{
+		g.ForEachNeighbor2(p, [&p, &empty, th](IInspectable const&, IInspectable const& v)
+			{
+				if (v == empty)
+				{
+					th->MoveRaw(p);
+					return false;
+				}
+				return true;
+			});
 	}
 }

@@ -48,7 +48,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 			for (uint32_t i{}; i < 0x10000; ++i)
 			{
 				auto const& [x, y] = pos[ex][ey][r() % pos[ex][ey].size()];
-				CommonMove(x, y, ex, ey, board, mem_fn(&PlayGame::MoveRaw), this);
+				CommonMove(x, y, ex, ey, board, this);
 			}
 			numbers[ex][ey] = 0;
 		}
@@ -79,18 +79,12 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	void PlayGame::Pause(IInspectable const&, RoutedEventArgs const&)
 	{
-		timer.Stop();
-		pause().Visibility(Visibility::Collapsed);
-		resume().Visibility(Visibility::Visible);
-		baby().Visibility(Visibility::Collapsed);
+		CommonPause(timer, pause(), resume(), baby());
 	}
 
 	void PlayGame::Resume(IInspectable const&, RoutedEventArgs const&)
 	{
-		pause().Visibility(Visibility::Visible);
-		resume().Visibility(Visibility::Collapsed);
-		baby().Visibility(Visibility::Visible);
-		timer.Start();
+		CommonResume(timer, pause(), resume(), baby());
 	}
 
 	void PlayGame::Surrender(IInspectable const&, RoutedEventArgs const&) const
@@ -123,7 +117,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					const uint8_t row = Grid::GetRow(button), column = Grid::GetColumn(button);
 					record.push_back(row);
 					record.push_back(column);
-					CommonMove(row, column, ex, ey, board, mem_fn(&PlayGame::MoveRaw), this);
+					CommonMove(row, column, ex, ey, board, this);
 				}
 				uint16_t now = 1;
 				for (uint8_t i{}; i < height; ++i)
@@ -133,7 +127,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				timer.Stop();
 				record.front() = 1;
 				WriteRecord();
-				Congratulations(time, XamlRoot(), mem_fn(&PlayGame::GoBack), this);
+				Congratulations(time, XamlRoot(), this);
 			fail:;
 			});
 		return buttons[x][y] = button;

@@ -57,7 +57,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				empties.emplace(ex, ey);
 				const uint32_t current = content.GetAt(read_pos++) | content.GetAt(read_pos++) << 8 | content.GetAt(read_pos++) << 16 | content.GetAt(read_pos++) << 24;
 				const uint8_t x = content.GetAt(read_pos++), y = content.GetAt(read_pos++);
-				CommonMove(x, y, ex, ey, board, mem_fn(&ReplayGame::MoveRaw), this);
+				CommonMove(x, y, ex, ey, board, this);
 				if (read_pos >= content.Size())
 				{
 					Pause(nullptr, nullptr);
@@ -97,7 +97,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		auto [x, y] = empties.top();
 		empties.pop();
 		read_pos -= 6;
-		CommonMove(x, y, ex, ey, board, mem_fn(&ReplayGame::MoveRaw), this);
+		CommonMove(x, y, ex, ey, board, this);
 		if (empties.empty())
 			previous().IsEnabled(false);
 		resume().IsEnabled(true);
@@ -109,7 +109,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		empties.emplace(ex, ey);
 		const uint32_t current = content.GetAt(read_pos++) | content.GetAt(read_pos++) << 8 | content.GetAt(read_pos++) << 16 | content.GetAt(read_pos++) << 24;
 		const uint8_t x = content.GetAt(read_pos++), y = content.GetAt(read_pos++);
-		CommonMove(x, y, ex, ey, board, mem_fn(&ReplayGame::MoveRaw), this);
+		CommonMove(x, y, ex, ey, board, this);
 		if (read_pos >= content.Size())
 		{
 			resume().IsEnabled(false);

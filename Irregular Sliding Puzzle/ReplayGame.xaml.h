@@ -15,6 +15,8 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		void Next(IInspectable const&, RoutedEventArgs const&);
 		void ChooseSpeed(IInspectable const& sender, SelectionChangedEventArgs const&);
 
+		void MoveRaw(uint8_t const& x, uint8_t const& y);
+
 	private:
 		double speed = 1.0;
 		uint8_t height, width, ex, ey;
@@ -25,8 +27,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		IVectorView<uint8_t> content;
 		DispatcherTimer timer;
 		stack<pair<uint8_t, uint8_t>> empties;
-
-		void MoveRaw(uint8_t const& x, uint8_t const& y);
 	};
 }
 

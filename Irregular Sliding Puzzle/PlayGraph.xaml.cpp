@@ -54,18 +54,12 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 
 	void PlayGraph::Pause(IInspectable const&, RoutedEventArgs const&)
 	{
-		timer.Stop();
-		pause().Visibility(Visibility::Collapsed);
-		resume().Visibility(Visibility::Visible);
-		board().Visibility(Visibility::Collapsed);
+		CommonPause(timer, pause(), resume(), board());
 	}
 
 	void PlayGraph::Resume(IInspectable const&, RoutedEventArgs const&)
 	{
-		pause().Visibility(Visibility::Visible);
-		resume().Visibility(Visibility::Collapsed);
-		board().Visibility(Visibility::Visible);
-		timer.Start();
+		CommonResume(timer, pause(), resume(), board());
 	}
 
 	void PlayGraph::Surrender(IInspectable const&, RoutedEventArgs const&) const
@@ -95,7 +89,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		button.Content(box_value(to_hstring(n)));
 		button.Click([this, button](IInspectable const&, RoutedEventArgs const&)
 			{
-				Move(rev.at(button));
+				CommonMove(rev.at(button), g, empty, this);
 				CheckComplete();
 			});
 		return buttons[rev[button] = p] = button;
@@ -106,7 +100,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		const SPolyline pl = CommonLine(p, u, v);
 		pl.Tapped([this, u, v](IInspectable const&, TappedRoutedEventArgs const&)
 			{
-				Move(u, v);
+				CommonMove(u, v, empty, this);
 				CheckComplete();
 			});
 		return pl;
@@ -120,7 +114,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 			}))
 		{
 			timer.Stop();
-			Congratulations(time, XamlRoot(), mem_fn(&PlayGraph::GoBack), this);
+			Congratulations(time, XamlRoot(), this);
 		}
 	}
 
@@ -133,26 +127,5 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		buttons[empty] = button;
 		numbers[empty] = numbers.at(v);
 		swap(rev.at(button), empty);
-	}
-
-	void PlayGraph::Move(IInspectable const& u, IInspectable const& v)
-	{
-		if (u == empty)
-			MoveRaw(v);
-		else if (v == empty)
-			MoveRaw(u);
-	}
-
-	void PlayGraph::Move(IInspectable const& p)
-	{
-		g.ForEachNeighbor2(p, [this, &p](IInspectable const&, IInspectable const& v)
-			{
-				if (v == empty)
-				{
-					MoveRaw(p);
-					return false;
-				}
-				return true;
-			});
 	}
 }

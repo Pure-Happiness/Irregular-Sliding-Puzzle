@@ -12,6 +12,9 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		void Resume(IInspectable const&, RoutedEventArgs const&);
 		void Surrender(IInspectable const&, RoutedEventArgs const&) const;
 
+		void GoBack() const;
+		void MoveRaw(IInspectable const& v);
+
 	private:
 		GraphP g;
 		uint16_t num;
@@ -24,13 +27,9 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		vector<uint8_t> record;
 		IInspectable empty = nullptr;
 
-		void GoBack() const;
 		Button CreateButton(IInspectable const& p, uint16_t const& n);
 		SPolyline CreateEdge(IVector<Point> const& p, IInspectable const& u, IInspectable const& v);
 		void CheckComplete();
-		void MoveRaw(IInspectable const& v);
-		void Move(IInspectable const& u, IInspectable const& v);
-		void Move(IInspectable const& p);
 	};
 }
 
