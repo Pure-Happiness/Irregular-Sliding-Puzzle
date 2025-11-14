@@ -68,8 +68,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				if (board.GetAt(i).GetAt(j))
 				{
 					const uint16_t num = numbers[i][j];
-					record.push_back(num & 0xFF);
-					record.push_back(num >> 8);
+					record.push_back(num & 0xFF), record.push_back(num >> 8);
 				}
 		SetTimer(timer, time, Timer());
 		timer.Start();
@@ -90,7 +89,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	void PlayGame::Surrender(IInspectable const&, RoutedEventArgs const&) const
 	{
 		timer.Stop();
-		WriteRecord();
+		WriteRecord(record);
 		GoBack();
 	}
 
@@ -107,11 +106,8 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		button.Click([this, button](IInspectable const&, RoutedEventArgs const&)
 			{
 				{
-					const uint32_t duration = duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - start_time).count();
-					record.push_back(duration & 0xFF);
-					record.push_back(duration >> 8 & 0xFF);
-					record.push_back(duration >> 16 & 0xFF);
-					record.push_back(duration >> 24);
+					const uint32_t d = duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - start_time).count();
+					record.push_back(d & 0xFF), record.push_back(d >> 8 & 0xFF), record.push_back(d >> 16 & 0xFF), record.push_back(d >> 24);
 				}
 				{
 					const uint8_t row = Grid::GetRow(button), column = Grid::GetColumn(button);
@@ -126,7 +122,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 							goto fail;
 				timer.Stop();
 				record.front() = 1;
-				WriteRecord();
+				WriteRecord(record);
 				Congratulations(time, XamlRoot(), this);
 			fail:;
 			});
@@ -141,10 +137,5 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		buttons[ex][ey] = button;
 		numbers[ex][ey] = numbers[x][y];
 		ex = x, ey = y;
-	}
-
-	fire_and_forget PlayGame::WriteRecord() const
-	{
-		FileIO::WriteBytesAsync(co_await ApplicationData::GetDefault().LocalFolder().CreateFileAsync(to_hstring(std::time(nullptr))), record);
 	}
 }

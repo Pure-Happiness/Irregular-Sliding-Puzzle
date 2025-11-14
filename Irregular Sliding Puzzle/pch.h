@@ -133,7 +133,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		return element;
 	}
 
-	constexpr Border(*CommonBorder)(unsigned char const&, unsigned char const&) = Common<Border>;
+	constexpr Border(*CommonBorder)(uint8_t const&, uint8_t const&) = Common<Border>;
 
 	inline Button CommonButton(uint8_t const& x, uint8_t const& y, uint16_t const& val)
 	{
@@ -374,5 +374,10 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				}
 				return true;
 			});
+	}
+
+	inline fire_and_forget WriteRecord(vector<uint8_t> const& record)
+	{
+		FileIO::WriteBytesAsync(co_await ApplicationData::GetDefault().LocalFolder().CreateFileAsync(to_hstring(std::time(nullptr))), record);
 	}
 }

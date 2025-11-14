@@ -24,8 +24,9 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		map<IInspectable, Button> buttons;
 		map<Button, IInspectable> rev;
 		DispatcherTimer timer;
-		vector<uint8_t> record;
 		IInspectable empty = nullptr;
+		vector<uint8_t> record;
+		map<IInspectable, uint16_t> vertex_rk, edge_rk;
 
 		Button CreateButton(IInspectable const& p, uint16_t const& n);
 		SPolyline CreateEdge(IVector<Point> const& p, IInspectable const& u, IInspectable const& v);

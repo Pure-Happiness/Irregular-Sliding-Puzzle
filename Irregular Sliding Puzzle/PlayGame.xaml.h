@@ -27,7 +27,6 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		vector<uint8_t> record;
 
 		Button CreateButton(uint8_t const& x, uint8_t const& y, uint16_t const& n);
-		fire_and_forget WriteRecord() const;
 	};
 }
 

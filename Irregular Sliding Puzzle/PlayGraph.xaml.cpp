@@ -28,24 +28,57 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 					children.Append(CreateEdge(e.as<IVector<Point>>(), u, v));
 				});
 		}
-		map<IInspectable, vector<IInspectable>> mp;
-		if (!g.ForEachVertex2([this, &mp](IInspectable const& v)
-			{
-				vector<IInspectable>& mpv = mp[v];
-				g.ForEachNeighbor(v, [&mpv](IInspectable const&, IInspectable const& w)
-					{
-						mpv.push_back(w);
-					});
-				return !mpv.empty();
-			}))
-			return false;
-		mt19937 r(static_cast<unsigned>(chrono::system_clock::now().time_since_epoch().count()) ^ random_device()());
-		for (uint32_t i{}; i < 0x10000; ++i)
 		{
-			vector<IInspectable> const& mpe = mp.at(empty);
-			MoveRaw(mpe[r() % mpe.size()]);
+			map<IInspectable, vector<IInspectable>> mp;
+			if (!g.ForEachVertex2([this, &mp](IInspectable const& v)
+				{
+					vector<IInspectable>& mpv = mp[v];
+					g.ForEachNeighbor(v, [&mpv](IInspectable const&, IInspectable const& w)
+						{
+							mpv.push_back(w);
+						});
+					return !mpv.empty();
+				}))
+				return false;
+			mt19937 r(static_cast<unsigned>(chrono::system_clock::now().time_since_epoch().count()) ^ random_device()());
+			for (uint32_t i{}; i < 0x10000; ++i)
+			{
+				vector<IInspectable> const& mpe = mp.at(empty);
+				MoveRaw(mpe[r() % mpe.size()]);
+			}
 		}
 		numbers[empty] = 0;
+		record.push_back(0xf0);
+		{
+			const uint16_t vc = g.VertexCount();
+			record.push_back(vc & 0xff), record.push_back(vc >> 8);
+			uint16_t v_rk{};
+			g.ForEachVertex([this, &v_rk](IInspectable const& v)
+				{
+					vertex_rk[v] = v_rk++;
+					auto const& [X, Y] = unbox_value<Point>(v);
+					const uint32_t x = *reinterpret_cast<const uint32_t*>(&X), y = *reinterpret_cast<const uint32_t*>(&Y);
+					record.push_back(x & 0xff), record.push_back(x >> 8 & 0xff), record.push_back(x >> 16 & 0xff), record.push_back(x >> 24);
+					record.push_back(y & 0xff), record.push_back(y >> 8 & 0xff), record.push_back(y >> 16 & 0xff), record.push_back(y >> 24);
+				});
+		}
+		{
+			const uint16_t ec = g.EdgeCount();
+			record.push_back(ec & 0xff), record.push_back(ec >> 8);
+			uint16_t e_rk{};
+			g.ForEachEdge([this, &e_rk](IInspectable const& e, IInspectable const& u, IInspectable const& v)
+				{
+					edge_rk[e] = e_rk++;
+					const uint16_t u_rk = vertex_rk.at(u), v_rk = vertex_rk.at(v);
+					record.push_back(u_rk & 0xff), record.push_back(u_rk >> 8);
+					record.push_back(v_rk & 0xff), record.push_back(v_rk >> 8);
+				});
+		}
+		g.ForEachVertex([this](IInspectable const& v)
+			{
+				const uint16_t num = numbers.at(v);
+				record.push_back(num & 0xff), record.push_back(num >> 8);
+			});
 		SetTimer(timer, time, Timer());
 		timer.Start();
 		start_time = chrono::steady_clock::now();
@@ -65,6 +98,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	void PlayGraph::Surrender(IInspectable const&, RoutedEventArgs const&) const
 	{
 		timer.Stop();
+		WriteRecord(record);
 		GoBack();
 	}
 
@@ -89,7 +123,17 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		button.Content(box_value(to_hstring(n)));
 		button.Click([this, button](IInspectable const&, RoutedEventArgs const&)
 			{
-				CommonMove(rev.at(button), g, empty, this);
+				{
+					const uint32_t d = duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - start_time).count();
+					record.push_back(d & 0xFF), record.push_back(d >> 8 & 0xFF), record.push_back(d >> 16 & 0xFF), record.push_back(d >> 24);
+				}
+				record.push_back(0);
+				{
+					IInspectable const& v = rev.at(button);
+					const uint16_t v_rk = vertex_rk.at(v);
+					record.push_back(v_rk & 0xff), record.push_back(v_rk >> 8);
+					CommonMove(v, g, empty, this);
+				}
 				CheckComplete();
 			});
 		return buttons[rev[button] = p] = button;
@@ -98,8 +142,17 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	SPolyline PlayGraph::CreateEdge(IVector<Point> const& p, IInspectable const& u, IInspectable const& v)
 	{
 		const SPolyline pl = CommonLine(p, u, v);
-		pl.Tapped([this, u, v](IInspectable const&, TappedRoutedEventArgs const&)
+		pl.Tapped([this, p, u, v](IInspectable const&, TappedRoutedEventArgs const&)
 			{
+				{
+					const uint32_t d = duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - start_time).count();
+					record.push_back(d & 0xFF), record.push_back(d >> 8 & 0xFF), record.push_back(d >> 16 & 0xFF), record.push_back(d >> 24);
+				}
+				record.push_back(0xff);
+				{
+					const uint16_t e_rk = edge_rk.at(p);
+					record.push_back(e_rk & 0xff), record.push_back(e_rk >> 8);
+				}
 				CommonMove(u, v, empty, this);
 				CheckComplete();
 			});
@@ -114,6 +167,8 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 			}))
 		{
 			timer.Stop();
+			record.front() = 0xf1;
+			WriteRecord(record);
 			Congratulations(time, XamlRoot(), this);
 		}
 	}
