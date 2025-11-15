@@ -10,5 +10,27 @@
     <StackPanel>
         <HyperlinkButton x:Uid="GitHub"/>
         <HyperlinkButton x:Uid="Gitee"/>
+        <HyperlinkButton x:Uid="Issues" NavigateUri="https://github.com/Pure-Happiness/Irregular-Sliding-Puzzle/issues/new"/>
+        <HyperlinkButton x:Uid="Contact" NavigateUri="mailto:Pure-Happiness@outlook.com"/>
+        <Grid Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <BitmapIcon
+		        Margin="0,0,8,0"
+		        VerticalAlignment="Center"
+		        ShowAsMonochrome="False"
+		        UriSource="ms-appx:///Assets/StoreLogo.scale-100.png"/>
+            <TextBlock
+                Grid.Column="1"
+                x:Uid="Name"
+                VerticalAlignment="Center"/>
+            <TextBlock
+                Grid.Column="2"
+                Text="1.0.0"
+                VerticalAlignment="Center"/>
+        </Grid>
     </StackPanel>
 </UserControl>

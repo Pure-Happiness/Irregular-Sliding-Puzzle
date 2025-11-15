@@ -8,6 +8,11 @@
     mc:Ignorable="d">
 
     <StackPanel Spacing="12">
+        <Border/>
+        <TextBlock
+            FontWeight="Bold"
+            x:Uid="Appearance"
+            Margin="0,8"/>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -45,5 +50,22 @@
                 <ComboBoxItem x:Uid="System"/>
             </ComboBox>
         </Grid>
+        <Border/>
+        <TextBlock
+            FontWeight="Bold"
+            x:Uid="Record"
+            Margin="0,8"/>
+        <CheckBox
+            x:Name="gridRecord"
+            x:Uid="GridRecord"
+            Loaded="GridLoaded"
+            Checked="GridChecked"
+            Unchecked="GridUnchecked"/>
+        <CheckBox
+            x:Name="graphRecord"
+            x:Uid="GraphRecord"
+            Loaded="GraphLoaded"
+            Checked="GraphChecked"
+            Unchecked="GraphUnchecked"/>
     </StackPanel>
 </UserControl>

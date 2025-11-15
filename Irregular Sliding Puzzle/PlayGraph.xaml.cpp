@@ -50,34 +50,35 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		numbers[empty] = 0;
 		record.push_back(0xf0);
 		{
-			const uint16_t vc = g.VertexCount();
-			record.push_back(vc & 0xff), record.push_back(vc >> 8);
+			WriteInt(record, g.VertexCount());
 			uint16_t v_rk{};
 			g.ForEachVertex([this, &v_rk](IInspectable const& v)
 				{
 					vertex_rk[v] = v_rk++;
 					auto const& [X, Y] = unbox_value<Point>(v);
-					const uint32_t x = *reinterpret_cast<const uint32_t*>(&X), y = *reinterpret_cast<const uint32_t*>(&Y);
-					record.push_back(x & 0xff), record.push_back(x >> 8 & 0xff), record.push_back(x >> 16 & 0xff), record.push_back(x >> 24);
-					record.push_back(y & 0xff), record.push_back(y >> 8 & 0xff), record.push_back(y >> 16 & 0xff), record.push_back(y >> 24);
+					WriteFloat(X), WriteFloat(Y);
 				});
 		}
 		{
-			const uint16_t ec = g.EdgeCount();
-			record.push_back(ec & 0xff), record.push_back(ec >> 8);
+			WriteInt(record, g.EdgeCount());
 			uint16_t e_rk{};
 			g.ForEachEdge([this, &e_rk](IInspectable const& e, IInspectable const& u, IInspectable const& v)
 				{
 					edge_rk[e] = e_rk++;
-					const uint16_t u_rk = vertex_rk.at(u), v_rk = vertex_rk.at(v);
-					record.push_back(u_rk & 0xff), record.push_back(u_rk >> 8);
-					record.push_back(v_rk & 0xff), record.push_back(v_rk >> 8);
+					WriteInt(record, vertex_rk.at(u)), WriteInt(record, vertex_rk.at(v));
+					const auto points = e.as<IVector<Point>>();
+					const auto count = static_cast<uint16_t>(points.Size());
+					WriteInt(record, count);
+					for (uint16_t i{}; i < count; ++i)
+					{
+						auto const& [X, Y] = points.GetAt(i);
+						WriteFloat(X), WriteFloat(Y);
+					}
 				});
 		}
 		g.ForEachVertex([this](IInspectable const& v)
 			{
-				const uint16_t num = numbers.at(v);
-				record.push_back(num & 0xff), record.push_back(num >> 8);
+				WriteInt(record, numbers.at(v));
 			});
 		SetTimer(timer, time, Timer());
 		timer.Start();
@@ -98,7 +99,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	void PlayGraph::Surrender(IInspectable const&, RoutedEventArgs const&) const
 	{
 		timer.Stop();
-		WriteRecord(record);
+		WriteRecord(record, graph_record);
 		GoBack();
 	}
 
@@ -123,15 +124,11 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		button.Content(box_value(to_hstring(n)));
 		button.Click([this, button](IInspectable const&, RoutedEventArgs const&)
 			{
-				{
-					const uint32_t d = duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - start_time).count();
-					record.push_back(d & 0xFF), record.push_back(d >> 8 & 0xFF), record.push_back(d >> 16 & 0xFF), record.push_back(d >> 24);
-				}
+				WriteTime(record, start_time);
 				record.push_back(0);
 				{
 					IInspectable const& v = rev.at(button);
-					const uint16_t v_rk = vertex_rk.at(v);
-					record.push_back(v_rk & 0xff), record.push_back(v_rk >> 8);
+					WriteInt(record, vertex_rk.at(v));
 					CommonMove(v, g, empty, this);
 				}
 				CheckComplete();
@@ -144,15 +141,9 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		const SPolyline pl = CommonLine(p, u, v);
 		pl.Tapped([this, p, u, v](IInspectable const&, TappedRoutedEventArgs const&)
 			{
-				{
-					const uint32_t d = duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - start_time).count();
-					record.push_back(d & 0xFF), record.push_back(d >> 8 & 0xFF), record.push_back(d >> 16 & 0xFF), record.push_back(d >> 24);
-				}
+				WriteTime(record, start_time);
 				record.push_back(0xff);
-				{
-					const uint16_t e_rk = edge_rk.at(p);
-					record.push_back(e_rk & 0xff), record.push_back(e_rk >> 8);
-				}
+				WriteInt(record, edge_rk.at(p));
 				CommonMove(u, v, empty, this);
 				CheckComplete();
 			});
@@ -168,7 +159,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		{
 			timer.Stop();
 			record.front() = 0xf1;
-			WriteRecord(record);
+			WriteRecord(record, graph_record);
 			Congratulations(time, XamlRoot(), this);
 		}
 	}
@@ -182,5 +173,12 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		buttons[empty] = button;
 		numbers[empty] = numbers.at(v);
 		swap(rev.at(button), empty);
+	}
+
+	void PlayGraph::WriteFloat(float const& X)
+	{
+		uint8_t x[4];
+		*reinterpret_cast<float*>(x) = X;
+		record.push_back(x[0]), record.push_back(x[1]), record.push_back(x[2]), record.push_back(x[3]);
 	}
 }

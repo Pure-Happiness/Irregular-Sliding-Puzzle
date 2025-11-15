@@ -31,6 +31,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		Button CreateButton(IInspectable const& p, uint16_t const& n);
 		SPolyline CreateEdge(IVector<Point> const& p, IInspectable const& u, IInspectable const& v);
 		void CheckComplete();
+		void WriteFloat(float const& X);
 	};
 }
 

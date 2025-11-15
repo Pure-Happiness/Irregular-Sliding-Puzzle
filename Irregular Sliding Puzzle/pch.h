@@ -77,7 +77,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	inline uint8_t o_height, o_width;
 	inline IVector<IVector<bool>> o_board;
 	inline Graph o_graph = nullptr;
-	inline bool o_mode;
+	inline bool o_mode, grid_record = true, graph_record = true;
 
 	inline Brush AccentFill()
 	{
@@ -376,8 +376,20 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 			});
 	}
 
-	inline fire_and_forget WriteRecord(vector<uint8_t> const& record)
+	inline fire_and_forget WriteRecord(vector<uint8_t> const& record, bool const& write)
 	{
-		FileIO::WriteBytesAsync(co_await ApplicationData::GetDefault().LocalFolder().CreateFileAsync(to_hstring(std::time(nullptr))), record);
+		if (write)
+			FileIO::WriteBytesAsync(co_await ApplicationData::GetDefault().LocalFolder().CreateFileAsync(to_hstring(std::time(nullptr))), record);
+	}
+
+	inline void WriteInt(vector<uint8_t>& record, uint16_t const& val)
+	{
+		record.push_back(val & 0xff), record.push_back(val >> 8);
+	}
+
+	inline void WriteTime(vector<uint8_t>& record, chrono::time_point<chrono::steady_clock> const& start)
+	{
+		const uint32_t d = duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - start).count();
+		record.push_back(d & 0xFF), record.push_back(d >> 8 & 0xFF), record.push_back(d >> 16 & 0xFF), record.push_back(d >> 24);
 	}
 }

@@ -10,6 +10,12 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		void SelectLanguage(IInspectable const&, SelectionChangedEventArgs const&);
 		void InitTheme(IInspectable const&, RoutedEventArgs const&);
 		void SelectTheme(IInspectable const&, SelectionChangedEventArgs const&);
+		void GridLoaded(IInspectable const&, RoutedEventArgs const&);
+		void GridChecked(IInspectable const&, RoutedEventArgs const&);
+		void GridUnchecked(IInspectable const&, RoutedEventArgs const&);
+		void GraphLoaded(IInspectable const&, RoutedEventArgs const&);
+		void GraphChecked(IInspectable const&, RoutedEventArgs const&);
+		void GraphUnchecked(IInspectable const&, RoutedEventArgs const&);
 	};
 }
 

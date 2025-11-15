@@ -25,6 +25,10 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				Application::Current().RequestedTheme(static_cast<ApplicationTheme>(value));
 		if (const IInspectable language = settings.TryLookup(L"Language"))
 			ApplicationLanguages::PrimaryLanguageOverride(unbox_value<int32_t>(language) ? L"zh-CN" : L"en-US");
+		if (const IInspectable record_grid = settings.TryLookup(L"GridRecord"))
+			grid_record = unbox_value<bool>(record_grid);
+		if (const IInspectable record_graph = settings.TryLookup(L"GraphRecord"))
+			graph_record = unbox_value<bool>(record_graph);
 	}
 
 	/// <summary>

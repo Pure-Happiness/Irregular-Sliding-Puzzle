@@ -53,8 +53,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 			numbers[ex][ey] = 0;
 		}
 		record.push_back(0);
-		record.push_back(height);
-		record.push_back(width);
+		record.push_back(height), record.push_back(width);
 		{
 			vector<bool> flat;
 			for (auto i : board)
@@ -66,10 +65,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		for (uint8_t i{}; i < height; ++i)
 			for (uint8_t j{}; j < width; ++j)
 				if (board.GetAt(i).GetAt(j))
-				{
-					const uint16_t num = numbers[i][j];
-					record.push_back(num & 0xFF), record.push_back(num >> 8);
-				}
+					WriteInt(record, numbers[i][j]);
 		SetTimer(timer, time, Timer());
 		timer.Start();
 		start_time = chrono::steady_clock::now();
@@ -89,7 +85,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	void PlayGame::Surrender(IInspectable const&, RoutedEventArgs const&) const
 	{
 		timer.Stop();
-		WriteRecord(record);
+		WriteRecord(record, grid_record);
 		GoBack();
 	}
 
@@ -105,14 +101,10 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		const Button button = CommonButton(x, y, n);
 		button.Click([this, button](IInspectable const&, RoutedEventArgs const&)
 			{
-				{
-					const uint32_t d = duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - start_time).count();
-					record.push_back(d & 0xFF), record.push_back(d >> 8 & 0xFF), record.push_back(d >> 16 & 0xFF), record.push_back(d >> 24);
-				}
+				WriteTime(record, start_time);
 				{
 					const uint8_t row = Grid::GetRow(button), column = Grid::GetColumn(button);
-					record.push_back(row);
-					record.push_back(column);
+					record.push_back(row), record.push_back(column);
 					CommonMove(row, column, ex, ey, board, this);
 				}
 				uint16_t now = 1;
@@ -122,7 +114,7 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 							goto fail;
 				timer.Stop();
 				record.front() = 1;
-				WriteRecord(record);
+				WriteRecord(record, grid_record);
 				Congratulations(time, XamlRoot(), this);
 			fail:;
 			});

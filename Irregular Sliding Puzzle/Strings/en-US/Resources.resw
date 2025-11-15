@@ -126,23 +126,29 @@
   <data name="AddVertices.Text" xml:space="preserve">
     <value>Add Vertices</value>
   </data>
+  <data name="Appearance.Text" xml:space="preserve">
+    <value>Appearance (Take effect on next launch)</value>
+  </data>
   <data name="Back" xml:space="preserve">
     <value>Close</value>
   </data>
   <data name="Congratulations" xml:space="preserve">
     <value>Congratulations!</value>
   </data>
+  <data name="Contact.Content" xml:space="preserve">
+    <value>Contact us</value>
+  </data>
   <data name="Dark.Content" xml:space="preserve">
     <value>Dark</value>
   </data>
   <data name="Gitee.Content" xml:space="preserve">
-    <value>User guide on Gitee.</value>
+    <value>Documentation on Gitee</value>
   </data>
   <data name="Gitee.NavigateUri" xml:space="preserve">
     <value>https://gitee.com/Pure-Happiness/Irregular-Sliding-Puzzle/blob/master/README.md</value>
   </data>
   <data name="GitHub.Content" xml:space="preserve">
-    <value>User guide on GitHub.</value>
+    <value>Documentation on GitHub</value>
   </data>
   <data name="GitHub.NavigateUri" xml:space="preserve">
     <value>https://github.com/Pure-Happiness/Irregular-Sliding-Puzzle/blob/master/README.md</value>
@@ -150,8 +156,14 @@
   <data name="GraphMode.Label" xml:space="preserve">
     <value>Graph</value>
   </data>
+  <data name="GraphRecord.Content" xml:space="preserve">
+    <value>Graph Mode</value>
+  </data>
   <data name="GridMode.Label" xml:space="preserve">
     <value>Grid</value>
+  </data>
+  <data name="GridRecord.Content" xml:space="preserve">
+    <value>Grid mode</value>
   </data>
   <data name="Help.Label" xml:space="preserve">
     <value>Help</value>
@@ -159,11 +171,17 @@
   <data name="History.Text" xml:space="preserve">
     <value>History</value>
   </data>
+  <data name="Issues.Content" xml:space="preserve">
+    <value>Report bugs or suggestions</value>
+  </data>
   <data name="Language.Text" xml:space="preserve">
     <value>Language</value>
   </data>
   <data name="Light.Content" xml:space="preserve">
     <value>Light</value>
+  </data>
+  <data name="Name.Text" xml:space="preserve">
+    <value>Irregular Sliding Puzzle</value>
   </data>
   <data name="Next.Label" xml:space="preserve">
     <value>Next</value>
@@ -176,6 +194,9 @@
   </data>
   <data name="Previous.Label" xml:space="preserve">
     <value>Previous</value>
+  </data>
+  <data name="Record.Text" xml:space="preserve">
+    <value>Game process record</value>
   </data>
   <data name="Resume.Label" xml:space="preserve">
     <value>Resume</value>
@@ -202,9 +223,9 @@
     <value>Irregular Sliding Puzzle</value>
   </data>
   <data name="用户指南" xml:space="preserve">
-    <value>User Guide</value>
+    <value>Help</value>
   </data>
   <data name="设置" xml:space="preserve">
-    <value>Settings (Take effect on next launch)</value>
+    <value>Settings</value>
   </data>
 </root>

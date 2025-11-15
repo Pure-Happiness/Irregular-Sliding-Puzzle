@@ -29,4 +29,34 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 	{
 		ApplicationData::GetDefault().LocalSettings().Values().Insert(L"Theme", box_value(theme().SelectedIndex()));
 	}
+
+	void Settings::GridLoaded(IInspectable const&, RoutedEventArgs const&)
+	{
+		gridRecord().IsChecked(grid_record);
+	}
+
+	void Settings::GridChecked(IInspectable const&, RoutedEventArgs const&)
+	{
+		ApplicationData::GetDefault().LocalSettings().Values().Insert(L"GridRecord", box_value(grid_record = true));
+	}
+
+	void Settings::GridUnchecked(IInspectable const&, RoutedEventArgs const&)
+	{
+		ApplicationData::GetDefault().LocalSettings().Values().Insert(L"GridRecord", box_value(grid_record = false));
+	}
+
+	void Settings::GraphLoaded(IInspectable const&, RoutedEventArgs const&)
+	{
+		graphRecord().IsChecked(graph_record);
+	}
+
+	void Settings::GraphChecked(IInspectable const&, RoutedEventArgs const&)
+	{
+		ApplicationData::GetDefault().LocalSettings().Values().Insert(L"GraphRecord", box_value(graph_record = true));
+	}
+
+	void Settings::GraphUnchecked(IInspectable const&, RoutedEventArgs const&)
+	{
+		ApplicationData::GetDefault().LocalSettings().Values().Insert(L"GraphRecord", box_value(graph_record = false));
+	}
 }

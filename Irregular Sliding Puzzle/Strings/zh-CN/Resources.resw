@@ -126,23 +126,29 @@
   <data name="AddVertices.Text" xml:space="preserve">
     <value>添加顶点</value>
   </data>
+  <data name="Appearance.Text" xml:space="preserve">
+    <value>外观（下次启动时生效）</value>
+  </data>
   <data name="Back" xml:space="preserve">
     <value>关闭</value>
   </data>
   <data name="Congratulations" xml:space="preserve">
     <value>恭喜！</value>
   </data>
+  <data name="Contact.Content" xml:space="preserve">
+    <value>联系我们</value>
+  </data>
   <data name="Dark.Content" xml:space="preserve">
     <value>深色</value>
   </data>
   <data name="Gitee.Content" xml:space="preserve">
-    <value>Gitee 上的用户指南</value>
+    <value>Gitee 上的文档</value>
   </data>
   <data name="Gitee.NavigateUri" xml:space="preserve">
     <value>https://gitee.com/Pure-Happiness/Irregular-Sliding-Puzzle/blob/master/README_zh.md</value>
   </data>
   <data name="GitHub.Content" xml:space="preserve">
-    <value>GitHub 上的用户指南</value>
+    <value>GitHub 上的文档</value>
   </data>
   <data name="GitHub.NavigateUri" xml:space="preserve">
     <value>https://github.com/Pure-Happiness/Irregular-Sliding-Puzzle/blob/master/README_zh.md</value>
@@ -150,7 +156,13 @@
   <data name="GraphMode.Label" xml:space="preserve">
     <value>图模式</value>
   </data>
+  <data name="GraphRecord.Content" xml:space="preserve">
+    <value>图模式</value>
+  </data>
   <data name="GridMode.Label" xml:space="preserve">
+    <value>方格模式</value>
+  </data>
+  <data name="GridRecord.Content" xml:space="preserve">
     <value>方格模式</value>
   </data>
   <data name="Help.Label" xml:space="preserve">
@@ -159,11 +171,17 @@
   <data name="History.Text" xml:space="preserve">
     <value>历史</value>
   </data>
+  <data name="Issues.Content" xml:space="preserve">
+    <value>反馈问题或建议</value>
+  </data>
   <data name="Language.Text" xml:space="preserve">
     <value>语言</value>
   </data>
   <data name="Light.Content" xml:space="preserve">
     <value>浅色</value>
+  </data>
+  <data name="Name.Text" xml:space="preserve">
+    <value>异形数字华容道</value>
   </data>
   <data name="Next.Label" xml:space="preserve">
     <value>下一步</value>
@@ -176,6 +194,9 @@
   </data>
   <data name="Previous.Label" xml:space="preserve">
     <value>上一步</value>
+  </data>
+  <data name="Record.Text" xml:space="preserve">
+    <value>游戏过程记录</value>
   </data>
   <data name="Resume.Label" xml:space="preserve">
     <value>继续</value>
@@ -202,9 +223,9 @@
     <value>异形数字华容道</value>
   </data>
   <data name="用户指南" xml:space="preserve">
-    <value>用户指南</value>
+    <value>帮助</value>
   </data>
   <data name="设置" xml:space="preserve">
-    <value>设置（下次启动时生效）</value>
+    <value>设置</value>
   </data>
 </root>
