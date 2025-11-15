@@ -70,6 +70,18 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 		{
 			start = point.Position();
 			dragging = true;
+		}
+	}
+
+	void DesignGame::DrawMoved(IInspectable const&, PointerRoutedEventArgs const& e)
+	{
+		if (const PointerPoint point = e.GetCurrentPoint(draw()); point.Properties().IsLeftButtonPressed() && dragging && graph_status == Curve)
+			intermediate.push_back(point.Position());
+	}
+
+	void DesignGame::DrawReleased(IInspectable const&, PointerRoutedEventArgs const& e)
+	{
+		if (const PointerPoint point = e.GetCurrentPoint(draw()); point.Properties().PointerUpdateKind() == PointerUpdateKind::LeftButtonReleased && dragging)
 			if (graph_status == Vertex)
 			{
 				for (auto const& p : vertices | views::keys)
@@ -82,52 +94,41 @@ namespace winrt::Irregular_Sliding_Puzzle::implementation
 				g.AddVertex(bs);
 				draw().Children().Append(CreateVertex(bs));
 			}
-		}
-	}
-
-	void DesignGame::DrawMoved(IInspectable const&, PointerRoutedEventArgs const& e)
-	{
-		if (const PointerPoint point = e.GetCurrentPoint(draw()); point.Properties().IsLeftButtonPressed() && dragging && graph_status == Curve)
-			intermediate.push_back(point.Position());
-	}
-
-	void DesignGame::DrawReleased(IInspectable const&, PointerRoutedEventArgs const& e)
-	{
-		if (const PointerPoint point = e.GetCurrentPoint(draw()); point.Properties().PointerUpdateKind() == PointerUpdateKind::LeftButtonReleased && dragging && graph_status != Vertex)
-		{
-			const auto [sx, sy] = start;
-			const auto [ex, ey] = point.Position();
-			IInspectable u = nullptr, v = nullptr;
-			for (const auto& p : vertices | views::keys)
-				if (auto const& [cx, cy] = unbox_value<Point>(p); abs(cx - sx) < 16 && abs(cy - sy) < 16)
-				{
-					u = p;
-					goto suc1;
-				}
-			goto end;
-		suc1:
-			for (const auto& p : vertices | views::keys)
-				if (auto const& [cx, cy] = unbox_value<Point>(p); abs(cx - ex) < 16 && abs(cy - ey) < 16)
-				{
-					v = p;
-					goto suc2;
-				}
-			goto end;
-		suc2:
+			else
 			{
-				const IVector<Point> im = single_threaded_vector<Point>();
-				if (graph_status == Curve)
+				const auto [sx, sy] = start;
+				const auto [ex, ey] = point.Position();
+				IInspectable u = nullptr, v = nullptr;
+				for (const auto& p : vertices | views::keys)
+					if (auto const& [cx, cy] = unbox_value<Point>(p); abs(cx - sx) < 16 && abs(cy - sy) < 16)
+					{
+						u = p;
+						goto suc1;
+					}
+				goto end;
+			suc1:
+				for (const auto& p : vertices | views::keys)
+					if (auto const& [cx, cy] = unbox_value<Point>(p); abs(cx - ex) < 16 && abs(cy - ey) < 16)
+					{
+						v = p;
+						goto suc2;
+					}
+				goto end;
+			suc2:
 				{
-					for (Point const& p : intermediate)
-						im.Append(p);
+					const IVector<Point> im = single_threaded_vector<Point>();
+					if (graph_status == Curve)
+					{
+						for (Point const& p : intermediate)
+							im.Append(p);
+					}
+					g.AddEdge(im, u, v);
+					draw().Children().Append(CreateEdge(im, u, v));
 				}
-				g.AddEdge(im, u, v);
-				draw().Children().Append(CreateEdge(im, u, v));
+			end:
+				intermediate.clear();
+				dragging = false;
 			}
-		end:
-			intermediate.clear();
-			dragging = false;
-		}
 	}
 
 	void DesignGame::ToGraphMode(IInspectable const&, RoutedEventArgs const&)
